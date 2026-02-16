@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Mosque Digital Signage</string>
+    <string name="app_description">Community Digital Signage for Mosques</string>
+    <string name="loading_message">Loading...</string>
+    <string name="error_message">Failed to load content</string>
+    <string name="retry_button">Retry</string>
+</resources>

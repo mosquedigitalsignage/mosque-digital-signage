@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    
+    <!-- Background -->
+    <path
+        android:fillColor="@color/tv_background"
+        android:pathData="M0,0 L320,0 L320,180 L0,180 Z"/>
+    
+    <!-- MAP Logo Background -->
+    <path
+        android:fillColor="@color/colorPrimary"
+        android:pathData="M20,20 L100,20 L100,160 L20,160 Z"/>
+    
+    <!-- TV Icon -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M40,40 L80,40 L80,120 L40,120 Z"/>
+    
+    <!-- TV Stand -->
+    <path
+        android:fillColor="@color/colorPrimary"
+        android:pathData="M55,120 L65,120 L65,140 L55,140 Z"/>
+    
+    <!-- Stream Lines -->
+    <path
+        android:fillColor="@color/colorAccent"
+        android:pathData="M110,60 L300,60 L300,140 L110,140 Z"/>
+    
+    <!-- Play Button -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M130,80 L130,120 L170,100 Z"/>
+    
+    <!-- Decorative Elements -->
+    <path
+        android:fillColor="@color/colorAccent"
+        android:pathData="M200,80 L220,80 L220,120 L200,120 Z"/>
+    
+    <path
+        android:fillColor="@color/colorAccent"
+        android:pathData="M240,80 L260,80 L260,120 L240,120 Z"/>
+</vector>

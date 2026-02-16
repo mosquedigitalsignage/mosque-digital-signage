@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- MAP Brand Colors -->
+    <color name="colorPrimary">#4CAF50</color>
+    <color name="colorPrimaryDark">#388E3C</color>
+    <color name="colorAccent">#FFD600</color>
+    
+    <!-- Standard Colors -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- TV UI Colors -->
+    <color name="tv_background">#FF121212</color>
+    <color name="tv_surface">#FF1E1E1E</color>
+    <color name="tv_primary">#FF4CAF50</color>
+    <color name="tv_secondary">#FFFFD600</color>
+    
+    <!-- Focus Colors -->
+    <color name="focus_color">#FF4CAF50</color>
+    <color name="focus_color_secondary">#FFFFD600</color>
+</resources>

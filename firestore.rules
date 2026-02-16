@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Anyone can read mosque configs (public display)
+    match /mosques/{mosqueId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null &&
+        (get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.mosqueId == mosqueId
+         || get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == "platform_admin");
+    }
+
+    // Admin records
+    match /admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid;
+      allow update, delete: if request.auth != null &&
+        (request.auth.uid == uid
+         || get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == "platform_admin");
+    }
+  }
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta http-equiv="Cache-Control" content="public, max-age=300, must-revalidate" />
+  <meta name="screen-orientation" content="landscape" />
+  <meta name="full-screen" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <link rel="preload" href="./src/style.css" as="style" />
+  <link rel="preload" href="./src/main.js" as="script" />
+
+  <style>
+    body { font-display: swap; }
+  </style>
+
+  <title>Mosque Digital Signage</title>
+  <link rel="stylesheet" href="./src/style.css" />
+
+  <!-- Firebase SDK (compat CDN) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="main-layout">
+    <!-- Row 1: Welcome Message -->
+    <div class="header">Welcome</div>
+
+    <!-- Row 2: Three Columns -->
+    <div class="content-row">
+      <div class="prayer-times">
+        <div class="prayer-section">
+          <h2>Prayer Times</h2>
+          <ul id="prayer-times-list"></ul>
+        </div>
+      </div>
+
+      <div class="slideshow">
+        <img id="slideshow-img" src="" alt="Slideshow" />
+      </div>
+
+      <div class="qr-codes">
+        <div class="qr-list"></div>
+      </div>
+    </div>
+
+    <!-- Row 3: Ayats -->
+    <div class="ayats">
+      <div id="ayats-content">Loading...</div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
