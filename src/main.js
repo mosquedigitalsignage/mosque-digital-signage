@@ -242,6 +242,7 @@ function applyDriveContent(content) {
     currentIdx = 0;
     showImage(currentIdx);
     startSlideshowInterval();
+    renderMobileGallery(availableImages);
   } else {
     showPlaceholderSlideshow();
   }
@@ -321,6 +322,24 @@ function showPlaceholderSlideshow() {
     placeholder.textContent = 'No slideshow images configured. Add images to Google Drive.';
     slideshow.appendChild(placeholder);
   }
+}
+
+// === MOBILE GALLERY ===
+function renderMobileGallery(imageUrls) {
+  const slideshow = document.querySelector('.slideshow');
+  if (!slideshow) return;
+
+  const gallery = document.createElement('div');
+  gallery.className = 'slideshow-gallery';
+  imageUrls.forEach(url => {
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = 'Slideshow';
+    img.setAttribute('referrerpolicy', 'no-referrer');
+    img.loading = 'lazy';
+    gallery.appendChild(img);
+  });
+  slideshow.appendChild(gallery);
 }
 
 // === QR CODES ===

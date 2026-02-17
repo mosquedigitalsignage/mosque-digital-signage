@@ -433,3 +433,119 @@ html, body {
     line-height: 1.6;
   }
 }
+
+/* === Mobile Gallery (hidden on desktop, shown on mobile) === */
+.slideshow-gallery {
+  display: none;
+}
+
+/* === Mobile Layout (portrait phones and small tablets) === */
+@media (max-width: 768px) {
+  html, body {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: auto;
+  }
+
+  .main-layout {
+    height: auto;
+    min-height: 100vh;
+    max-height: none;
+    overflow: visible;
+  }
+
+  /* Stack columns vertically */
+  .content-row {
+    flex-direction: column;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    contain: none;
+    gap: 10px;
+  }
+
+  /* Remove fixed heights and contain from panels */
+  .prayer-times,
+  .slideshow,
+  .qr-codes {
+    height: auto;
+    max-height: none;
+    flex: none;
+    contain: none;
+    width: 100%;
+  }
+
+  /* Prayer times */
+  .prayer-times .prayer-section {
+    height: auto;
+  }
+
+  .prayer-times .prayer-section h2 {
+    font-size: 18px;
+  }
+
+  .prayer-times .prayer-section ul {
+    overflow-y: visible;
+  }
+
+  .prayer-times .prayer-section ul li {
+    font-size: 16px;
+  }
+
+  /* Slideshow: hide rotating image, show gallery */
+  .slideshow #slideshow-img {
+    display: none;
+  }
+
+  .slideshow-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .slideshow-gallery img {
+    width: 100%;
+    border-radius: 8px;
+    object-fit: contain;
+  }
+
+  /* QR codes: horizontal row on mobile */
+  .qr-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    overflow-y: visible;
+    max-height: none;
+    contain: none;
+  }
+
+  .qr-wrapper {
+    width: calc(50% - 8px);
+  }
+
+  .qr-img {
+    max-height: 160px;
+  }
+
+  .qr-label {
+    font-size: 14px;
+  }
+
+  /* Ayat footer: auto height for wrapping text */
+  .ayats {
+    height: auto;
+    min-height: 60px;
+    padding: 16px;
+    font-size: 14px;
+  }
+
+  /* Header */
+  .header {
+    height: auto;
+    min-height: 50px;
+    font-size: 18px;
+    padding: 12px;
+  }
+}
