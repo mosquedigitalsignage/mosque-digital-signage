@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Mosque Digital Signage is a generic, multi-tenant digital signage platform for mosques. It displays prayer times, a rotating image slideshow, QR codes, and Islamic quotes on Chromecast devices, Android TV, and web browsers. Each mosque self-configures via an admin dashboard; display data comes from Firestore and Google Drive.
+Multi-tenant digital signage platform for mosques. Displays prayer times, rotating image slideshow, QR codes, and Islamic quotes on Chromecast/Android TV/web browsers. Each mosque self-configures via an admin dashboard (`admin.html`); display data comes from Firestore and Google Drive.
 
 **Multi-tenant:** Each mosque gets a unique UUID. Display URL: `?mosque={uuid}`. No per-mosque code changes needed.
 
@@ -18,94 +18,80 @@ npm run build-deploy   # Build + deploy in one step
 npm run preview        # Preview production build locally
 ```
 
+No linter or test runner is configured. No TypeScript.
+
 ## Architecture
 
-**Stack:** Vanilla JavaScript (ES modules), Vite 7.1.0, Firebase (Auth + Firestore via CDN), Google Drive API v3, deployed to GitHub Pages with `gh-pages`.
+**Stack:** Vanilla JavaScript (ES modules), Vite, Firebase (Auth + Firestore), Google Drive API v3, deployed to GitHub Pages.
 
-### Source Files
+### Two Entry Points (Multi-Page Vite Build)
 
-- `index.html` — Display app entry point; loads Firebase CDN (app + firestore)
-- `admin.html` — Admin dashboard entry point; loads Firebase CDN (app + auth + firestore)
-- `src/main.js` — Display app logic (~550 lines): config loading, Drive content, slideshow, prayer times, ayat rotation, wake lock, TV optimization
-- `src/admin.js` — Admin dashboard: Google sign-in, mosque creation/editing, Firestore CRUD
-- `src/config.js` — Google Drive API utilities, calculation methods, default ayat/hadith data (40 items)
-- `src/firebase.js` — Firebase initialization, Firestore/Auth helper functions
-- `src/style.css` — Display app styles with CSS custom properties for theming, selector/error screens, TV-responsive media queries
-- `src/admin.css` — Admin dashboard dark theme styles
-- `vite.config.js` — Multi-page build (index.html + admin.html), base path `/mosque-digital-signage/`
-- `firestore.rules` — Firestore security rules (public reads, auth-scoped writes)
+The app has two independent pages configured in `vite.config.js`:
+- **`index.html` → `src/main.js`** — Public display app (no auth required). Firebase loads only `firebase-app-compat.js` + `firebase-firestore-compat.js`.
+- **`admin.html` → `src/admin.js`** — Admin dashboard (Google sign-in). Firebase loads app + auth + firestore compat scripts.
 
-### Key Functional Modules in main.js
+Shared modules: `src/firebase.js` (Firebase init, Firestore/Auth helpers), `src/config.js` (Drive API utilities, calculation methods, 40 default ayat/hadith).
 
-1. **App Init** — Parses `?mosque={uuid}` URL param, fetches config from Firestore, shows selector if missing, error if not found
-2. **Config Application** — Sets page title, header text, and CSS custom properties from Firestore theme config
-3. **Google Drive Content** — Discovers folder structure (slideshow/, qr-codes/, background.*) from a root folder ID, fetches image lists
-4. **Slideshow** — Rotates Drive images at configurable interval (default 8s); refreshes from Drive after each full rotation
-5. **QR Codes** — Up to 4 from Drive qr-codes/ folder; filename (minus extension) = display label, sorted alphabetically
-6. **Prayer Times** — Fetches from Aladhan API using zipcode/country/method from Firestore config; has configurable fallback times
-7. **Ayat/Hadith Rotation** — Cycles through 40 curated quotes at configurable interval (default 20s)
-8. **TV/Chromecast Detection** — Auto-detects display environment and optimizes viewport, fonts, layout
-9. **Wake Lock** — Prevents device sleep using Wake Lock API with fallbacks
-10. **Auto-Reload** — Schedules page reload at midnight daily
+### Firebase: CDN Compat Mode (Not Modular SDK)
+
+Firebase is loaded via CDN `<script>` tags in the HTML files (v10.12.0 compat), **not** via npm. The global `firebase` object is used directly. `src/firebase.js` wraps it with helper functions (`initFirebase()`, `getDb()`, `getAuth()`, `fetchMosqueConfig()`, etc.). Do not import from `firebase/app` or `firebase/firestore` — use the compat API pattern.
+
+### Google Drive Image Loading
+
+Images are served via `https://drive.google.com/thumbnail?id={fileId}&sz=w1600` to avoid CORS issues (CSS `url()` and direct file downloads are blocked). Background images use a positioned `<img>` element instead of CSS `background-image` for the same reason. All Drive image elements must set `referrerpolicy="no-referrer"`.
 
 ### Data Flow
 
 ```
 URL ?mosque={uuid}
   → Firestore: mosques/{uuid} → config (name, zipcode, drive folder, theme, etc.)
-  → Aladhan API: prayer times using config zipcode + method
-  → Google Drive API: discover folders → list images → display
-  → CSS custom properties: theme colors from config
+  → Aladhan API: prayer times via zipcode + country + calculation method
+  → Google Drive API: discover folder structure → list images → display via thumbnail URLs
+  → CSS custom properties: theme colors from Firestore config
   → LocalStorage: cache Drive content 24h, namespaced by mosque UUID
 ```
 
 ### Firestore Data Model
 
-- `mosques/{uuid}` — Mosque config: mosque info, location, prayer times, Google Drive folder ID, display theme
-- `admins/{firebase-uid}` — Admin-to-mosque mapping: mosqueId, email, role
+- `mosques/{uuid}` — Full mosque config: `mosque{}`, `location{}`, `prayerTimes{}`, `googleDrive{}`, `display{}`
+- `admins/{firebase-uid}` — Admin-to-mosque mapping: `mosqueId`, `email`, `role`
+
+Security rules (`firestore.rules`): mosques are publicly readable; writes require auth and ownership check via admin record lookup.
 
 ### Google Drive Folder Structure (Per Mosque)
 
 ```
-Root Folder/
-├── slideshow/          ← Announcement images (unlimited)
-├── qr-codes/           ← Max 4 QR code images (filename = label)
-└── background.*        ← Background image (single file)
+Root Folder/                ← ID stored in Firestore config as googleDrive.rootFolderId
+├── slideshow/              ← Announcement images (unlimited)
+├── qr-codes/               ← Max 4 QR code images (filename minus extension = display label)
+└── background.*            ← Single background image file
 ```
 
-### Caching Strategy
+Folders must be shared as "Anyone with the link" (Viewer). Folder discovery happens in `config.js:discoverDriveFolders()`.
 
-Single-tier LocalStorage cache namespaced by mosque UUID (`mosque_{uuid}_drive_content`). Drive folder listings cached for 24 hours. After a complete slideshow rotation, cache is cleared and images are re-fetched from Drive.
+### Caching
+
+LocalStorage cache keyed as `mosque_{uuid}_drive_content` with 24-hour TTL. Cache is cleared and re-fetched from Drive after each complete slideshow rotation.
 
 ### CSS Theming
 
-CSS custom properties set as defaults in `:root` and overridden at runtime from Firestore config:
-- `--header-bg` — Header and footer background
-- `--panel-bg` — Content panel backgrounds
-- `--accent-color` — Accent color (headings, QR labels, ayat border)
-- `--text-color` — Primary text color
+CSS custom properties in `:root` are overridden at runtime from Firestore `display.theme` config:
+`--header-bg`, `--panel-bg`, `--accent-color`, `--text-color`
+
+### Display Layout
+
+Three-row flex layout: Header (60px) | Content Row (Prayer Times flex:1 | Slideshow flex:2 | QR Codes flex:1) | Footer/Ayat (60px). TV optimization triggers at viewport width >= 1920px.
 
 ### Android TV Wrapper
 
-`android-tv-wrapper/` contains a Kotlin/Gradle native Android TV app (package `com.mosquesignage.tv`, target SDK 34) that wraps the web app in a full-screen WebView with:
-- **First-launch mosque picker:** Loads the web selector screen; saves chosen mosque UUID to SharedPreferences
-- **Persistent selection:** On subsequent launches, loads `{WEB_URL}?mosque={savedUUID}` directly
-- **Long-press BACK (3s):** Re-shows mosque picker to change selection
-- D-pad navigation and wake lock support
-
-## Layout Structure
-
-Three-row flex layout filling the viewport:
-- **Header** (60px): Welcome banner (text from Firestore config)
-- **Content Row**: Three columns — Prayer Times (flex:1) | Slideshow (flex:2) | QR Codes (flex:1)
-- **Footer** (60px): Rotating ayat/hadith display
+`android-tv-wrapper/` — Kotlin/Gradle Android TV app (package `com.mosquesignage.tv`, SDK 34) wrapping the web app in a WebView. First launch shows mosque picker; selection persists in SharedPreferences. Long-press BACK (3s) re-shows picker.
 
 ## Firebase Project
 
 - **Project ID:** `mosque-signage-platform`
-- **Console:** https://console.firebase.google.com/project/mosque-signage-platform/overview
-- **Firestore rules:** Deploy with `firebase deploy --only firestore:rules --project mosque-signage-platform`
+- **Firestore rules deploy:** `firebase deploy --only firestore:rules --project mosque-signage-platform`
 
-## Placeholder to Replace Before Deploying
+## Deployment Notes
 
-1. `android-tv-wrapper/app/build.gradle` — `YOUR_ORG` in `WEB_URL`
+- GitHub Pages base path: `/mosque-digital-signage/` (set in `vite.config.js`)
+- `android-tv-wrapper/app/build.gradle` contains `YOUR_ORG` placeholder in `WEB_URL` — replace before building the Android app
