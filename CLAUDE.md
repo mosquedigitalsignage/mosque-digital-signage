@@ -100,8 +100,12 @@ Three-row flex layout filling the viewport:
 - **Content Row**: Three columns — Prayer Times (flex:1) | Slideshow (flex:2) | QR Codes (flex:1)
 - **Footer** (60px): Rotating ayat/hadith display
 
-## Placeholders to Replace Before Deploying
+## Firebase Project
 
-1. `src/firebase.js` — `YOUR_FIREBASE_API_KEY`, `YOUR_PROJECT_ID`, `YOUR_SENDER_ID`, `YOUR_APP_ID`
-2. `src/config.js` — `YOUR_GOOGLE_DRIVE_API_KEY`
-3. `android-tv-wrapper/app/build.gradle` — `YOUR_ORG` in `WEB_URL`
+- **Project ID:** `mosque-signage-platform`
+- **Console:** https://console.firebase.google.com/project/mosque-signage-platform/overview
+- **Firestore rules:** Deploy with `firebase deploy --only firestore:rules --project mosque-signage-platform`
+
+## Placeholder to Replace Before Deploying
+
+1. `android-tv-wrapper/app/build.gradle` — `YOUR_ORG` in `WEB_URL`

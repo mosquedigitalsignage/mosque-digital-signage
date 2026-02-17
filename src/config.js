@@ -2,7 +2,7 @@
 
 // Google Drive API key (domain-restricted, safe to expose)
 // Replace with your actual API key from Google Cloud Console
-export const DRIVE_API_KEY = 'YOUR_GOOGLE_DRIVE_API_KEY';
+export const DRIVE_API_KEY = 'AIzaSyD1g0WI_N1leSgBp92xcZ546MWkOo1kElQ';
 
 // Google Drive API v3 base URL
 const DRIVE_API_BASE = 'https://www.googleapis.com/drive/v3';
@@ -26,16 +26,17 @@ export async function listDriveFolder(folderId) {
 }
 
 /**
- * Get a stable image URL for a Drive file via lh3 proxy.
+ * Get an image URL for a Drive file.
+ * Uses the thumbnail endpoint which is designed for browser embedding.
  * @param {string} fileId - Google Drive file ID
  * @returns {string} Image URL
  */
 export function getDriveImageUrl(fileId) {
-  return `https://lh3.googleusercontent.com/d/${fileId}`;
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
 }
 
 /**
- * Get a thumbnail URL for a Drive file (for smaller displays).
+ * Get a thumbnail URL for a Drive file (for smaller displays like QR codes).
  * @param {string} fileId - Google Drive file ID
  * @param {number} [maxWidth=800] - Maximum width in pixels
  * @returns {string} Thumbnail URL

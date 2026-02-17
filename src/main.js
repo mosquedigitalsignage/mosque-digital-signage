@@ -225,14 +225,15 @@ function cacheDriveContent(content) {
 }
 
 function applyDriveContent(content) {
-  // Background image
+  // Background image — use a positioned <img> element (avoids CORS issues with CSS url())
   if (content.backgroundFileId) {
     const bgUrl = getDriveImageUrl(content.backgroundFileId);
-    document.body.style.backgroundImage = `url('${bgUrl}')`;
-    document.body.style.backgroundSize = 'cover';
-    document.body.style.backgroundPosition = 'center center';
-    document.body.style.backgroundAttachment = 'fixed';
-    document.body.style.backgroundRepeat = 'no-repeat';
+    const bgImg = document.createElement('img');
+    bgImg.referrerPolicy = 'no-referrer';
+    bgImg.src = bgUrl;
+    bgImg.alt = '';
+    bgImg.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:-1;pointer-events:none;';
+    document.body.prepend(bgImg);
   }
 
   // Slideshow
@@ -261,6 +262,7 @@ function showImage(idx) {
 
   imgEl.style.opacity = 0;
   setTimeout(() => {
+    imgEl.setAttribute('referrerpolicy', 'no-referrer');
     imgEl.src = availableImages[idx];
     imgEl.onload = () => { imgEl.style.opacity = 1; };
     imgEl.onerror = () => {
@@ -338,6 +340,7 @@ function renderQrCodes(qrCodes) {
     const img = document.createElement('img');
     img.className = 'qr-img';
     img.alt = qr.label;
+    img.setAttribute('referrerpolicy', 'no-referrer');
     img.src = qr.url;
     img.onerror = () => {
       img.style.display = 'none';
