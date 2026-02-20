@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mosque Digital Signage — Prayer Times, Announcements & More</title>
+  <meta name="description" content="Free, open-source digital signage platform for mosques. Display prayer times, announcements, QR codes, and Islamic quotes on any screen." />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --text: #1e293b;
+      --text-secondary: #64748b;
+      --bg: #ffffff;
+      --bg-alt: #f8fafc;
+      --border: #e2e8f0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Nav */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 24px;
+    }
+
+    .nav-brand {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 80px 24px 60px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: #eff6ff;
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto 36px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-secondary {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: #cbd5e1;
+      background: var(--bg-alt);
+    }
+
+    /* Features */
+    .features {
+      background: var(--bg-alt);
+      padding: 80px 24px;
+    }
+
+    .features-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto 48px;
+      font-size: 1.05rem;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      transition: box-shadow 0.2s;
+    }
+
+    .feature-card:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      background: #eff6ff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+
+    .feature-card h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* How it works */
+    .how-it-works {
+      padding: 80px 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      margin-top: 48px;
+    }
+
+    .step {
+      text-align: center;
+    }
+
+    .step-number {
+      width: 48px;
+      height: 48px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 0 auto 16px;
+    }
+
+    .step h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .step p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    /* CTA */
+    .cta {
+      background: var(--bg-alt);
+      padding: 80px 24px;
+      text-align: center;
+    }
+
+    .cta h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .cta p {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      margin-bottom: 32px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Footer */
+    footer {
+      padding: 32px 24px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero { padding: 50px 20px 40px; }
+      .hero h1 { font-size: 2rem; }
+      .hero p { font-size: 1.05rem; }
+      .feature-grid { grid-template-columns: 1fr; gap: 16px; }
+      .steps { grid-template-columns: 1fr; gap: 32px; }
+      .nav-links { gap: 16px; }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="landing.html" class="nav-brand">Mosque Digital Signage</a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="admin.html">Admin</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-badge">Free &amp; Open Source</div>
+    <h1>Digital Signage for Your Mosque</h1>
+    <p>Display prayer times, announcements, and community info on any screen &mdash; TV, Chromecast, or browser. Set up in minutes, no coding required.</p>
+    <div class="hero-buttons">
+      <a href="index.html" class="btn btn-primary">Try Live Demo</a>
+      <a href="admin.html" class="btn btn-secondary">Admin Dashboard</a>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="features-inner">
+      <div class="section-label">Features</div>
+      <h2 class="section-title">Everything your mosque display needs</h2>
+      <p class="section-subtitle">A complete digital signage solution designed specifically for mosques, with zero monthly fees.</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">&#128336;</div>
+          <h3>Automatic Prayer Times</h3>
+          <p>Prayer times fetched daily from the Aladhan API using your mosque's zipcode and preferred calculation method. Includes Jummah time support.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">&#128247;</div>
+          <h3>Image Slideshow</h3>
+          <p>Rotate announcement images from a Google Drive folder. Images refresh automatically after each full rotation &mdash; update Drive, and the display updates itself.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">&#9641;</div>
+          <h3>QR Codes</h3>
+          <p>Display up to 4 QR code images with auto-generated labels. Perfect for donation links, event signups, social media, and WiFi access.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">&#127970;</div>
+          <h3>Multi-Tenant</h3>
+          <p>Each mosque gets a unique ID and display URL. Multiple mosques can use the same platform with completely independent configurations.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">&#128250;</div>
+          <h3>TV &amp; Chromecast Ready</h3>
+          <p>Optimized for 1080p and 4K displays with automatic TV detection, responsive scaling, wake lock to prevent sleep, and daily auto-reload at midnight.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">&#9881;</div>
+          <h3>Self-Service Admin</h3>
+          <p>Sign in with Google, create your mosque, and configure everything &mdash; prayer settings, theme colors, Drive folder, and display intervals &mdash; from one dashboard.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="how-it-works" id="how-it-works">
+    <div class="section-label">How It Works</div>
+    <h2 class="section-title">Up and running in three steps</h2>
+    <p class="section-subtitle">No technical knowledge required. If you can use Google Drive, you can run this.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Create Your Mosque</h3>
+        <p>Sign in to the admin dashboard with your Google account and fill in your mosque details, location, and prayer time preferences.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>Add Your Content</h3>
+        <p>Create a Google Drive folder with your slideshow images and QR codes. Paste the folder ID into the admin dashboard.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>Display Anywhere</h3>
+        <p>Open your unique display URL on any TV, Chromecast, tablet, or browser. It just works &mdash; fullscreen, auto-updating, always on.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>Ready to get started?</h2>
+    <p>Set up your mosque's digital display in under 5 minutes. Free forever, no account limits.</p>
+    <a href="admin.html" class="btn btn-primary">Create Your Mosque</a>
+  </section>
+
+  <footer>
+    <p>Mosque Digital Signage &mdash; Open-source digital signage for mosques everywhere.</p>
+    <p style="margin-top: 8px;"><a href="mailto:mosquedigitalsignage@gmail.com" style="color: var(--accent); text-decoration: none;">mosquedigitalsignage@gmail.com</a></p>
+  </footer>
+
+</body>
+</html>
