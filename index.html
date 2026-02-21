@@ -23,11 +23,15 @@
   <!-- Firebase SDK (compat CDN) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 </head>
 <body>
   <div class="main-layout">
     <!-- Row 1: Welcome Message -->
     <div class="header">Welcome</div>
+
+    <!-- Mobile announcement banner (hidden by default, shown via JS) -->
+    <div class="mobile-announcement" id="mobile-announcement" style="display:none;"></div>
 
     <!-- Row 2: Three Columns -->
     <div class="content-row">

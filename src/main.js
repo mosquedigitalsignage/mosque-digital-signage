@@ -10,7 +10,7 @@ import {
   getDriveImageUrl,
 } from './config.js';
 
-import { initFirebase, fetchMosqueConfig, fetchAllMosques } from './firebase.js';
+import { initFirebase, fetchMosqueConfig, fetchAllMosques, signInWithGoogle, fetchAdminRecord } from './firebase.js';
 
 // === GLOBAL STATE ===
 let mosqueConfig = null;
@@ -102,39 +102,71 @@ async function showMosqueSelector() {
   layout.innerHTML = `
     <div class="selector-screen">
       <h1>Mosque Digital Signage</h1>
-      <p>Select a mosque to display:</p>
+      <p>Sign in to browse mosques or use a direct mosque URL.</p>
       <div class="mosque-list" id="mosque-list">
-        <p class="loading-text">Loading mosques...</p>
+        <button id="sign-in-btn" class="sign-in-btn">Sign in with Google</button>
       </div>
     </div>
   `;
 
-  try {
-    const mosques = await fetchAllMosques();
-    const listEl = document.getElementById('mosque-list');
-    if (!listEl) return;
+  const signInBtn = document.getElementById('sign-in-btn');
+  signInBtn.addEventListener('click', handleSelectorSignIn);
+}
 
-    if (mosques.length === 0) {
-      listEl.innerHTML = '<p>No mosques configured yet. Visit the <a href="admin.html">admin dashboard</a> to set one up.</p>';
+async function handleSelectorSignIn() {
+  const listEl = document.getElementById('mosque-list');
+  if (!listEl) return;
+
+  listEl.innerHTML = '<p class="loading-text">Signing in...</p>';
+
+  try {
+    const result = await signInWithGoogle();
+    const uid = result.user.uid;
+
+    listEl.innerHTML = '<p class="loading-text">Checking access...</p>';
+
+    const adminRecord = await fetchAdminRecord(uid);
+
+    if (!adminRecord) {
+      listEl.innerHTML = '<p>You don\'t have admin access. Use a direct mosque URL to view a display.</p>';
       return;
     }
 
-    listEl.innerHTML = '';
-    mosques.forEach(m => {
-      const card = document.createElement('a');
-      card.className = 'mosque-card';
-      card.href = `?mosque=${m.id}`;
-      card.innerHTML = `
-        <div class="mosque-card-name">${m.name}</div>
-        ${m.shortName ? `<div class="mosque-card-short">${m.shortName}</div>` : ''}
-      `;
-      listEl.appendChild(card);
-    });
+    if (adminRecord.role === 'platform_admin') {
+      // Super admin: show full mosque list
+      listEl.innerHTML = '<p class="loading-text">Loading mosques...</p>';
+      const mosques = await fetchAllMosques();
+
+      if (mosques.length === 0) {
+        listEl.innerHTML = '<p>No mosques configured yet. Visit the <a href="admin.html">admin dashboard</a> to set one up.</p>';
+        return;
+      }
+
+      listEl.innerHTML = '';
+      mosques.forEach(m => {
+        const card = document.createElement('a');
+        card.className = 'mosque-card';
+        card.href = `?mosque=${m.id}`;
+        card.innerHTML = `
+          <div class="mosque-card-name">${m.name}</div>
+          ${m.shortName ? `<div class="mosque-card-short">${m.shortName}</div>` : ''}
+        `;
+        listEl.appendChild(card);
+      });
+    } else if (adminRecord.mosqueId) {
+      // Regular admin: redirect to their mosque
+      window.location.href = `?mosque=${adminRecord.mosqueId}`;
+    } else {
+      listEl.innerHTML = '<p>Your admin account is not linked to a mosque. Contact a platform administrator.</p>';
+    }
   } catch (err) {
-    console.error('Failed to load mosque list:', err);
-    const listEl = document.getElementById('mosque-list');
+    console.error('Sign-in failed:', err);
     if (listEl) {
-      listEl.innerHTML = '<p class="error-text">Failed to load mosque list. Please try again later.</p>';
+      listEl.innerHTML = `
+        <p class="error-text">Sign-in failed. Please try again.</p>
+        <button id="sign-in-btn" class="sign-in-btn">Sign in with Google</button>
+      `;
+      document.getElementById('sign-in-btn')?.addEventListener('click', handleSelectorSignIn);
     }
   }
 }
@@ -303,8 +335,9 @@ async function refreshDriveImages() {
       const freshImages = await getSlideshowImages(folders.slideshowFolderId);
       if (freshImages.length > 0) {
         availableImages = freshImages.map(img => img.url);
-        currentIdx = 0;
-        showImage(currentIdx);
+        if (currentIdx >= availableImages.length) {
+          currentIdx = 0;
+        }
       }
     }
   } catch (err) {
@@ -455,13 +488,46 @@ function initAyatRotation() {
   const ayatsContent = document.getElementById('ayats-content');
   if (!ayatsContent) return;
 
-  const list = ayatHadithList;
+  // Priority: enabled announcements > custom ayats > default ayat list
+  const enabledAnnouncements = (mosqueConfig?.announcements || []).filter(a => a.enabled);
+  const ayatsEl = document.querySelector('.ayats');
+  const layoutEl = document.querySelector('.main-layout');
+  let list;
+
+  const mobileAnn = document.getElementById('mobile-announcement');
+
+  if (enabledAnnouncements.length > 0) {
+    list = enabledAnnouncements.map(a => ({ en: a.text }));
+    const annColor = mosqueConfig?.display?.announcementColor || mosqueConfig?.display?.theme?.accentColor || '#3b82f6';
+    if (ayatsEl) {
+      ayatsEl.classList.add('has-announcements');
+      ayatsEl.style.setProperty('--announcement-color', annColor);
+    }
+    if (layoutEl) layoutEl.classList.add('has-announcements-layout');
+    if (mobileAnn) {
+      mobileAnn.style.display = '';
+      mobileAnn.style.setProperty('--announcement-color', annColor);
+    }
+  } else {
+    if (mobileAnn) mobileAnn.style.display = 'none';
+    if (ayatsEl) ayatsEl.classList.remove('has-announcements');
+    if (layoutEl) layoutEl.classList.remove('has-announcements-layout');
+    if (mosqueConfig?.customAyats && mosqueConfig.customAyats.length > 0) {
+      list = mosqueConfig.customAyats;
+    } else {
+      list = ayatHadithList;
+    }
+  }
+
   ayatIdx = 0;
 
   function showAyat(idx) {
     const ayat = list[idx];
     const en = ayat.en.replace(/[.]+(?=\s*\()/, '');
     ayatsContent.innerHTML = `<div class="ayat-text">${en}</div>`;
+    if (mobileAnn && enabledAnnouncements.length > 0) {
+      mobileAnn.textContent = en;
+    }
   }
 
   showAyat(ayatIdx);

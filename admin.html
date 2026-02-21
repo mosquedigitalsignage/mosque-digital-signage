@@ -363,6 +363,41 @@
           <button type="submit" class="btn btn-primary">Save Changes</button>
           <div id="save-status" class="save-status"></div>
         </form>
+
+        <!-- Announcements (outside main form, managed independently) -->
+        <fieldset class="standalone-section">
+          <legend>Announcements</legend>
+          <div class="info-box">
+            Active announcements rotate in the footer bar <strong>instead of</strong> ayats. Disable or delete all announcements to revert to ayats.
+          </div>
+          <div id="announcements-list" class="managed-list"></div>
+          <div class="add-row">
+            <input type="text" id="new-announcement-text" placeholder="e.g., Fundraiser this Friday after Isha" />
+            <button id="add-announcement-btn" class="btn btn-secondary">Add</button>
+          </div>
+          <label class="color-picker-label">
+            Announcement Bar Color
+            <div class="color-picker-row">
+              <input type="color" id="announcement-color" value="#3b82f6" />
+              <span id="announcement-color-value" class="color-value">#3b82f6</span>
+              <button id="reset-announcement-color-btn" class="btn btn-sm btn-outline">Use Accent</button>
+            </div>
+          </label>
+        </fieldset>
+
+        <!-- Custom Ayats (outside main form, managed independently) -->
+        <fieldset class="standalone-section">
+          <legend>Custom Ayats</legend>
+          <div class="info-box">
+            Replace the default ayat/hadith list with your own. Enter one ayat per line. Leave empty to use the built-in defaults.
+          </div>
+          <textarea id="custom-ayats-textarea" rows="8" placeholder="Indeed, prayer prohibits immorality... (Quran 29:45)&#10;So remember Me; I will remember you. (Quran 2:152)&#10;..."></textarea>
+          <div class="ayat-actions">
+            <button id="save-custom-ayats-btn" class="btn btn-primary">Save Custom Ayats</button>
+            <button id="reset-ayats-btn" class="btn btn-outline">Reset to Defaults</button>
+          </div>
+          <div id="ayat-save-status" class="save-status"></div>
+        </fieldset>
       </div>
     </div>
   </div>

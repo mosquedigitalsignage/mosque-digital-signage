@@ -72,6 +72,25 @@ function init() {
   // Edit mosque form
   document.getElementById('edit-mosque-form')?.addEventListener('submit', handleSaveChanges);
 
+  // Announcements
+  document.getElementById('add-announcement-btn')?.addEventListener('click', handleAddAnnouncement);
+  document.getElementById('new-announcement-text')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); handleAddAnnouncement(); }
+  });
+
+  // Announcement color
+  const colorInput = document.getElementById('announcement-color');
+  const colorValue = document.getElementById('announcement-color-value');
+  colorInput?.addEventListener('input', () => {
+    colorValue.textContent = colorInput.value;
+  });
+  colorInput?.addEventListener('change', handleSaveAnnouncementColor);
+  document.getElementById('reset-announcement-color-btn')?.addEventListener('click', handleResetAnnouncementColor);
+
+  // Custom Ayats
+  document.getElementById('save-custom-ayats-btn')?.addEventListener('click', handleSaveCustomAyats);
+  document.getElementById('reset-ayats-btn')?.addEventListener('click', handleResetAyats);
+
   // Preview button
   document.getElementById('preview-btn')?.addEventListener('click', () => {
     if (mosqueId) {
@@ -223,6 +242,16 @@ function populateDashboard() {
   // Display settings
   document.getElementById('ed-slideshow-interval').value = mc.display?.slideshowIntervalMs || 8000;
   document.getElementById('ed-ayat-interval').value = mc.display?.ayatRotationIntervalMs || 20000;
+
+  // Announcements
+  renderAnnouncementsList();
+  const annColor = mc.display?.announcementColor || mc.display?.theme?.accentColor || '#3b82f6';
+  document.getElementById('announcement-color').value = annColor;
+  document.getElementById('announcement-color-value').textContent = annColor;
+
+  // Custom Ayats
+  const customAyats = mc.customAyats || [];
+  document.getElementById('custom-ayats-textarea').value = customAyats.map(a => a.en).join('\n');
 }
 
 // === SAVE CHANGES ===
@@ -286,6 +315,147 @@ async function handleSaveChanges(e) {
     submitBtn.textContent = 'Save Changes';
     setTimeout(() => { statusEl.textContent = ''; }, 3000);
   }
+}
+
+// === ANNOUNCEMENTS ===
+function renderAnnouncementsList() {
+  const listEl = document.getElementById('announcements-list');
+  if (!listEl) return;
+
+  const announcements = mosqueConfig?.announcements || [];
+  if (announcements.length === 0) {
+    listEl.innerHTML = '<p class="empty-text">No announcements yet.</p>';
+    return;
+  }
+
+  listEl.innerHTML = '';
+  announcements.forEach((ann, idx) => {
+    const item = document.createElement('div');
+    item.className = 'managed-item' + (ann.enabled ? '' : ' disabled');
+    item.innerHTML = `
+      <span class="managed-item-text">${ann.text}</span>
+      <div class="managed-item-actions">
+        <button class="btn btn-sm btn-outline" data-action="toggle" data-idx="${idx}">
+          ${ann.enabled ? 'Disable' : 'Enable'}
+        </button>
+        <button class="btn btn-sm btn-danger" data-action="delete" data-idx="${idx}">Delete</button>
+      </div>
+    `;
+    listEl.appendChild(item);
+  });
+
+  listEl.querySelectorAll('[data-action="toggle"]').forEach(btn => {
+    btn.addEventListener('click', () => handleToggleAnnouncement(parseInt(btn.dataset.idx, 10)));
+  });
+  listEl.querySelectorAll('[data-action="delete"]').forEach(btn => {
+    btn.addEventListener('click', () => handleDeleteAnnouncement(parseInt(btn.dataset.idx, 10)));
+  });
+}
+
+async function handleAddAnnouncement() {
+  const input = document.getElementById('new-announcement-text');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const announcements = mosqueConfig?.announcements || [];
+  announcements.push({ text, enabled: true });
+
+  try {
+    await updateMosque(mosqueId, { announcements });
+    mosqueConfig.announcements = announcements;
+    input.value = '';
+    renderAnnouncementsList();
+  } catch (err) {
+    console.error('Failed to add announcement:', err);
+    alert('Failed to add announcement.');
+  }
+}
+
+async function handleToggleAnnouncement(idx) {
+  const announcements = [...(mosqueConfig?.announcements || [])];
+  if (!announcements[idx]) return;
+  announcements[idx] = { ...announcements[idx], enabled: !announcements[idx].enabled };
+
+  try {
+    await updateMosque(mosqueId, { announcements });
+    mosqueConfig.announcements = announcements;
+    renderAnnouncementsList();
+  } catch (err) {
+    console.error('Failed to toggle announcement:', err);
+  }
+}
+
+async function handleDeleteAnnouncement(idx) {
+  const announcements = [...(mosqueConfig?.announcements || [])];
+  announcements.splice(idx, 1);
+
+  try {
+    await updateMosque(mosqueId, { announcements });
+    mosqueConfig.announcements = announcements;
+    renderAnnouncementsList();
+  } catch (err) {
+    console.error('Failed to delete announcement:', err);
+  }
+}
+
+async function handleSaveAnnouncementColor() {
+  const color = document.getElementById('announcement-color').value;
+  try {
+    await updateMosque(mosqueId, { display: { ...mosqueConfig.display, announcementColor: color } });
+    mosqueConfig.display = { ...mosqueConfig.display, announcementColor: color };
+  } catch (err) {
+    console.error('Failed to save announcement color:', err);
+  }
+}
+
+async function handleResetAnnouncementColor() {
+  const accentColor = mosqueConfig?.display?.theme?.accentColor || '#3b82f6';
+  document.getElementById('announcement-color').value = accentColor;
+  document.getElementById('announcement-color-value').textContent = accentColor;
+  try {
+    await updateMosque(mosqueId, { display: { ...mosqueConfig.display, announcementColor: accentColor } });
+    mosqueConfig.display = { ...mosqueConfig.display, announcementColor: accentColor };
+  } catch (err) {
+    console.error('Failed to reset announcement color:', err);
+  }
+}
+
+// === CUSTOM AYATS ===
+async function handleSaveCustomAyats() {
+  const textarea = document.getElementById('custom-ayats-textarea');
+  const statusEl = document.getElementById('ayat-save-status');
+  const lines = textarea.value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const customAyats = lines.map(en => ({ en }));
+
+  try {
+    await updateMosque(mosqueId, { customAyats });
+    mosqueConfig.customAyats = customAyats;
+    statusEl.textContent = `Saved ${customAyats.length} custom ayat(s).`;
+    statusEl.className = 'save-status success';
+  } catch (err) {
+    console.error('Failed to save custom ayats:', err);
+    statusEl.textContent = 'Failed to save. Please try again.';
+    statusEl.className = 'save-status error';
+  }
+  setTimeout(() => { statusEl.textContent = ''; }, 3000);
+}
+
+async function handleResetAyats() {
+  const textarea = document.getElementById('custom-ayats-textarea');
+  const statusEl = document.getElementById('ayat-save-status');
+
+  try {
+    await updateMosque(mosqueId, { customAyats: [] });
+    mosqueConfig.customAyats = [];
+    textarea.value = '';
+    statusEl.textContent = 'Reset to default ayats.';
+    statusEl.className = 'save-status success';
+  } catch (err) {
+    console.error('Failed to reset ayats:', err);
+    statusEl.textContent = 'Failed to reset. Please try again.';
+    statusEl.className = 'save-status error';
+  }
+  setTimeout(() => { statusEl.textContent = ''; }, 3000);
 }
 
 // === BOOT ===
