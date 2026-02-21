@@ -71,7 +71,7 @@
         <!-- TV banner image -->
         <meta-data
             android:name="banner"
-            android:resource="@drawable/app_banner" />
+            android:resource="@drawable/banner" />
 
         <!-- Launcher icon for TV home screen -->
         <meta-data
