@@ -6,12 +6,12 @@
 // These are client-side config values and safe to expose publicly.
 // Replace these with your actual Firebase project values.
 const firebaseConfig = {
-  apiKey: "AIzaSyDPvBtl5R2G-zooxWHqKMacuPItDotdM1c",
-  authDomain: "mosque-signage-platform.firebaseapp.com",
-  projectId: "mosque-signage-platform",
-  storageBucket: "mosque-signage-platform.firebasestorage.app",
-  messagingSenderId: "180812689964",
-  appId: "1:180812689964:web:0b24975c5ab41af822d789",
+  apiKey: "AIzaSyARbUDcJ73ZWtcnaHtZ6hfwQCIiw1bqQSw",
+  authDomain: "mosque-signage-platform-8e2d3.firebaseapp.com",
+  projectId: "mosque-signage-platform-8e2d3",
+  storageBucket: "mosque-signage-platform-8e2d3.firebasestorage.app",
+  messagingSenderId: "166957039943",
+  appId: "1:166957039943:web:684e61f7c0bac5b5f18c62",
 };
 
 let initialized = false;

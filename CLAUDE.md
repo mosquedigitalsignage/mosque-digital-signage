@@ -88,8 +88,8 @@ Three-row flex layout: Header (60px) | Content Row (Prayer Times flex:1 | Slides
 
 ## Firebase Project
 
-- **Project ID:** `mosque-signage-platform`
-- **Firestore rules deploy:** `firebase deploy --only firestore:rules --project mosque-signage-platform`
+- **Project ID:** `mosque-signage-platform-8e2d3`
+- **Firestore rules deploy:** `firebase deploy --only firestore:rules --project mosque-signage-platform-8e2d3`
 
 ## Deployment Notes
 
