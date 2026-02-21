@@ -10,7 +10,7 @@ import {
   getDriveImageUrl,
 } from './config.js';
 
-import { initFirebase, fetchMosqueConfig, fetchAllMosques, signInWithGoogle, fetchAdminRecord } from './firebase.js';
+import { initFirebase, fetchMosqueConfig, fetchAllMosques } from './firebase.js';
 
 // === GLOBAL STATE ===
 let mosqueConfig = null;
@@ -102,72 +102,37 @@ async function showMosqueSelector() {
   layout.innerHTML = `
     <div class="selector-screen">
       <h1>Mosque Digital Signage</h1>
-      <p>Sign in to browse mosques or use a direct mosque URL.</p>
+      <p>Select your mosque</p>
       <div class="mosque-list" id="mosque-list">
-        <button id="sign-in-btn" class="sign-in-btn">Sign in with Google</button>
+        <p class="loading-text">Loading mosques...</p>
       </div>
     </div>
   `;
 
-  const signInBtn = document.getElementById('sign-in-btn');
-  signInBtn.addEventListener('click', handleSelectorSignIn);
-}
-
-async function handleSelectorSignIn() {
   const listEl = document.getElementById('mosque-list');
-  if (!listEl) return;
-
-  listEl.innerHTML = '<p class="loading-text">Signing in...</p>';
 
   try {
-    const result = await signInWithGoogle();
-    const uid = result.user.uid;
+    const mosques = await fetchAllMosques();
 
-    listEl.innerHTML = '<p class="loading-text">Checking access...</p>';
-
-    const adminRecord = await fetchAdminRecord(uid);
-
-    if (!adminRecord) {
-      listEl.innerHTML = '<p>You don\'t have admin access. Use a direct mosque URL to view a display.</p>';
+    if (mosques.length === 0) {
+      listEl.innerHTML = '<p>No mosques configured yet. Visit the <a href="admin.html">admin dashboard</a> to set one up.</p>';
       return;
     }
 
-    if (adminRecord.role === 'platform_admin') {
-      // Super admin: show full mosque list
-      listEl.innerHTML = '<p class="loading-text">Loading mosques...</p>';
-      const mosques = await fetchAllMosques();
-
-      if (mosques.length === 0) {
-        listEl.innerHTML = '<p>No mosques configured yet. Visit the <a href="admin.html">admin dashboard</a> to set one up.</p>';
-        return;
-      }
-
-      listEl.innerHTML = '';
-      mosques.forEach(m => {
-        const card = document.createElement('a');
-        card.className = 'mosque-card';
-        card.href = `?mosque=${m.id}`;
-        card.innerHTML = `
-          <div class="mosque-card-name">${m.name}</div>
-          ${m.shortName ? `<div class="mosque-card-short">${m.shortName}</div>` : ''}
-        `;
-        listEl.appendChild(card);
-      });
-    } else if (adminRecord.mosqueId) {
-      // Regular admin: redirect to their mosque
-      window.location.href = `?mosque=${adminRecord.mosqueId}`;
-    } else {
-      listEl.innerHTML = '<p>Your admin account is not linked to a mosque. Contact a platform administrator.</p>';
-    }
-  } catch (err) {
-    console.error('Sign-in failed:', err);
-    if (listEl) {
-      listEl.innerHTML = `
-        <p class="error-text">Sign-in failed. Please try again.</p>
-        <button id="sign-in-btn" class="sign-in-btn">Sign in with Google</button>
+    listEl.innerHTML = '';
+    mosques.forEach(m => {
+      const card = document.createElement('a');
+      card.className = 'mosque-card';
+      card.href = `?mosque=${m.id}`;
+      card.innerHTML = `
+        <div class="mosque-card-name">${m.name}</div>
+        ${m.shortName ? `<div class="mosque-card-short">${m.shortName}</div>` : ''}
       `;
-      document.getElementById('sign-in-btn')?.addEventListener('click', handleSelectorSignIn);
-    }
+      listEl.appendChild(card);
+    });
+  } catch (err) {
+    console.error('Failed to load mosques:', err);
+    listEl.innerHTML = '<p class="error-text">Failed to load mosques. Please check your connection and try again.</p>';
   }
 }
 
