@@ -494,15 +494,22 @@ function initAyatRotation() {
   const layoutEl = document.querySelector('.main-layout');
   let list;
 
+  const mobileAnn = document.getElementById('mobile-announcement');
+
   if (enabledAnnouncements.length > 0) {
     list = enabledAnnouncements.map(a => ({ en: a.text }));
+    const annColor = mosqueConfig?.display?.announcementColor || mosqueConfig?.display?.theme?.accentColor || '#3b82f6';
     if (ayatsEl) {
       ayatsEl.classList.add('has-announcements');
-      const annColor = mosqueConfig?.display?.announcementColor || mosqueConfig?.display?.theme?.accentColor || '#3b82f6';
       ayatsEl.style.setProperty('--announcement-color', annColor);
     }
     if (layoutEl) layoutEl.classList.add('has-announcements-layout');
+    if (mobileAnn) {
+      mobileAnn.style.display = '';
+      mobileAnn.style.setProperty('--announcement-color', annColor);
+    }
   } else {
+    if (mobileAnn) mobileAnn.style.display = 'none';
     if (ayatsEl) ayatsEl.classList.remove('has-announcements');
     if (layoutEl) layoutEl.classList.remove('has-announcements-layout');
     if (mosqueConfig?.customAyats && mosqueConfig.customAyats.length > 0) {
@@ -518,6 +525,9 @@ function initAyatRotation() {
     const ayat = list[idx];
     const en = ayat.en.replace(/[.]+(?=\s*\()/, '');
     ayatsContent.innerHTML = `<div class="ayat-text">${en}</div>`;
+    if (mobileAnn && enabledAnnouncements.length > 0) {
+      mobileAnn.textContent = en;
+    }
   }
 
   showAyat(ayatIdx);

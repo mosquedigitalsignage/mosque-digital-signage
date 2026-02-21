@@ -26,17 +26,18 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    /* Nav */
     nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      max-width: 1100px;
+      max-width: 960px;
       margin: 0 auto;
-      padding: 20px 24px;
+      padding: 16px 20px;
     }
 
     .nav-brand {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 700;
       color: var(--text);
       text-decoration: none;
@@ -44,65 +45,25 @@
 
     .nav-links {
       display: flex;
-      gap: 24px;
+      gap: 20px;
       list-style: none;
     }
 
     .nav-links a {
       color: var(--text-secondary);
       text-decoration: none;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       transition: color 0.2s;
     }
 
     .nav-links a:hover { color: var(--accent); }
 
-    /* Hero */
-    .hero {
-      text-align: center;
-      padding: 100px 24px 80px;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .hero-badge {
-      display: inline-block;
-      background: #eff6ff;
-      color: var(--accent);
-      font-size: 0.85rem;
-      font-weight: 600;
-      padding: 6px 16px;
-      border-radius: 20px;
-      margin-bottom: 24px;
-    }
-
-    .hero h1 {
-      font-size: 3rem;
-      font-weight: 800;
-      line-height: 1.15;
-      margin-bottom: 20px;
-      letter-spacing: -0.02em;
-    }
-
-    .hero p {
-      font-size: 1.2rem;
-      color: var(--text-secondary);
-      max-width: 600px;
-      margin: 0 auto 36px;
-    }
-
-    .hero-buttons {
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
+    /* Buttons */
     .btn {
       display: inline-block;
-      padding: 14px 28px;
+      padding: 12px 24px;
       border-radius: 8px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
       text-decoration: none;
       transition: all 0.2s ease;
@@ -132,86 +93,143 @@
       background: var(--bg-alt);
     }
 
-    /* Highlights */
-    .highlights {
-      display: flex;
-      justify-content: center;
-      gap: 48px;
-      padding: 0 24px 80px;
-      max-width: 800px;
+    /* Section wrapper */
+    .section {
+      max-width: 960px;
       margin: 0 auto;
+      padding: 0 20px;
     }
 
-    .highlight {
-      text-align: center;
+    /* Hero */
+    .hero {
+      padding: 48px 0 40px;
     }
 
-    .highlight-label {
-      font-size: 0.85rem;
+    .hero-badge {
+      display: inline-block;
+      background: #eff6ff;
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      max-width: 520px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Features — 2x2 grid */
+    .features {
+      padding: 32px 0 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .feature {
+      padding: 16px;
+      border-radius: 10px;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+    }
+
+    .feature-label {
+      font-size: 0.8rem;
       font-weight: 600;
       color: var(--accent);
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
-    .highlight p {
+    .feature p {
       color: var(--text-secondary);
-      font-size: 0.95rem;
+      font-size: 0.85rem;
+      line-height: 1.45;
     }
 
-    /* How it works */
-    .how-it-works {
-      padding: 60px 24px 80px;
-      max-width: 800px;
-      margin: 0 auto;
+    /* Steps */
+    .steps-section {
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
     }
 
-    .how-it-works h2 {
-      text-align: center;
-      font-size: 1.6rem;
+    .steps-section h2 {
+      font-size: 1.3rem;
       font-weight: 700;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
     }
 
     .steps {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    .step { text-align: center; }
+    .step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
 
     .step-number {
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
       background: var(--accent);
       color: #fff;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin: 0 auto 12px;
-    }
-
-    .step h3 {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .step p {
-      color: var(--text-secondary);
       font-size: 0.9rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .step-content h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .step-content p {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    .cta {
+      padding: 32px 0;
     }
 
     /* Footer */
     footer {
-      padding: 32px 24px;
-      text-align: center;
+      padding: 24px 20px;
       color: var(--text-secondary);
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       border-top: 1px solid var(--border);
+      max-width: 960px;
+      margin: 0 auto;
     }
 
     footer a {
@@ -219,13 +237,48 @@
       text-decoration: none;
     }
 
-    @media (max-width: 768px) {
-      .hero { padding: 60px 20px 50px; }
-      .hero h1 { font-size: 2rem; }
-      .hero p { font-size: 1.05rem; }
-      .highlights { flex-direction: column; gap: 24px; }
-      .steps { grid-template-columns: 1fr; gap: 24px; }
-      .nav-links { gap: 16px; }
+    /* Desktop */
+    @media (min-width: 768px) {
+      .hero {
+        padding: 80px 0 60px;
+        text-align: center;
+      }
+
+      .hero h1 { font-size: 3rem; }
+      .hero p {
+        font-size: 1.2rem;
+        margin: 0 auto 32px;
+      }
+
+      .hero-buttons { justify-content: center; }
+
+      .features { padding: 48px 0 56px; }
+      .features-grid { gap: 16px; }
+
+      .feature { padding: 20px 24px; }
+
+      .steps-section {
+        padding: 56px 0;
+        text-align: center;
+      }
+
+      .steps-section h2 { margin-bottom: 32px; }
+
+      .steps {
+        flex-direction: row;
+        gap: 32px;
+      }
+
+      .step {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        flex: 1;
+      }
+
+      .cta { text-align: center; padding: 40px 0; }
+
+      footer { text-align: center; }
     }
   </style>
 </head>
@@ -238,62 +291,73 @@
     </ul>
   </nav>
 
-  <section class="hero">
-    <div class="hero-badge">Free & Open Source</div>
-    <h1>Digital Signage for Your Mosque</h1>
-    <p>Display prayer times, announcements, and community info on any screen. Set up in minutes, no coding required.</p>
-    <div class="hero-buttons">
-      <a href="admin.html" class="btn btn-primary">Get Started</a>
-      <a href="index.html?mosque=501bc0de-7e2c-41c4-b004-15ac3bf5ce58" class="btn btn-secondary">View Demo</a>
-    </div>
-  </section>
+  <div class="section">
+    <section class="hero">
+      <div class="hero-badge">Free & Open Source</div>
+      <h1>Digital Signage for Your Mosque</h1>
+      <p>Display prayer times, announcements, and community info on any screen. Set up in minutes, no coding required.</p>
+      <div class="hero-buttons">
+        <a href="admin.html" class="btn btn-primary">Get Started</a>
+        <a href="index.html?mosque=501bc0de-7e2c-41c4-b004-15ac3bf5ce58" class="btn btn-secondary">View Demo</a>
+      </div>
+    </section>
 
-  <div class="highlights">
-    <div class="highlight">
-      <div class="highlight-label">Prayer Times</div>
-      <p>Auto-updated daily by zipcode and calculation method</p>
-    </div>
-    <div class="highlight">
-      <div class="highlight-label">Announcements</div>
-      <p>Post text announcements that rotate in the footer bar, bold and in your chosen color</p>
-    </div>
-    <div class="highlight">
-      <div class="highlight-label">Custom Ayats</div>
-      <p>Use your own ayat list or reset to built-in defaults</p>
-    </div>
-    <div class="highlight">
-      <div class="highlight-label">QR Codes</div>
-      <p>Show donation links, event signups, or WiFi access</p>
+    <section class="features">
+      <div class="features-grid">
+        <div class="feature">
+          <div class="feature-label">Prayer Times</div>
+          <p>Auto-updated daily by zipcode and calculation method</p>
+        </div>
+        <div class="feature">
+          <div class="feature-label">Announcements</div>
+          <p>Bold text in the footer bar, in your chosen color</p>
+        </div>
+        <div class="feature">
+          <div class="feature-label">Custom Ayats</div>
+          <p>Use your own list or the built-in defaults</p>
+        </div>
+        <div class="feature">
+          <div class="feature-label">QR Codes</div>
+          <p>Donation links, event signups, or WiFi access</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="steps-section">
+      <h2>How it works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Sign in & create your mosque</h3>
+            <p>Use your Google account. Enter your mosque name, location, and prayer time preferences.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Add content to Google Drive</h3>
+            <p>Create a shared folder with slideshow images and QR codes. Paste the folder ID into the dashboard.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Open on any screen</h3>
+            <p>Load your display URL on a TV, Chromecast, or browser. It stays awake and refreshes automatically.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="cta">
+      <a href="admin.html" class="btn btn-primary">Set Up Your Mosque</a>
     </div>
   </div>
 
-  <section class="how-it-works">
-    <h2>How mosque management uses it</h2>
-    <div class="steps">
-      <div class="step">
-        <div class="step-number">1</div>
-        <h3>Sign in & create your mosque</h3>
-        <p>Use your Google account on the admin dashboard. Enter your mosque name, location, and prayer time preferences.</p>
-      </div>
-      <div class="step">
-        <div class="step-number">2</div>
-        <h3>Add content to Google Drive</h3>
-        <p>Create a shared folder with your announcement images and QR codes. Paste the folder ID into the dashboard.</p>
-      </div>
-      <div class="step">
-        <div class="step-number">3</div>
-        <h3>Open on any screen</h3>
-        <p>Load your unique display URL on a TV, Chromecast, or browser. It runs fullscreen, stays awake, and refreshes automatically.</p>
-      </div>
-    </div>
-    <div style="text-align: center; margin-top: 40px;">
-      <a href="admin.html" class="btn btn-primary">Set Up Your Mosque</a>
-    </div>
-  </section>
-
   <footer>
     <p>Mosque Digital Signage &mdash; Open-source signage for mosques everywhere.</p>
-    <p style="margin-top: 8px;"><a href="mailto:mosquedigitalsignage@gmail.com">mosquedigitalsignage@gmail.com</a></p>
+    <p style="margin-top: 6px;"><a href="mailto:mosquedigitalsignage@gmail.com">mosquedigitalsignage@gmail.com</a></p>
   </footer>
 
 </body>
