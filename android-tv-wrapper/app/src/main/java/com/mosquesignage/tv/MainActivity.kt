@@ -1,11 +1,10 @@
 package com.mosquesignage.tv
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.os.PowerManager
 import android.view.WindowManager
 import android.webkit.WebView
@@ -13,7 +12,9 @@ import android.webkit.WebViewClient
 import android.webkit.WebSettings
 import android.view.KeyEvent
 import android.view.View
+import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -36,6 +37,11 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val PREFS_NAME = "mosque_signage_prefs"
         private const val KEY_MOSQUE_ID = "selected_mosque_id"
+        private const val KEY_CUSTOM_URL = "custom_base_url"
+    }
+
+    private fun getBaseUrl(): String {
+        return prefs.getString(KEY_CUSTOM_URL, null) ?: BuildConfig.WEB_URL
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -75,16 +81,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadDisplay() {
         val savedMosqueId = prefs.getString(KEY_MOSQUE_ID, null)
-        val webUrl = BuildConfig.WEB_URL
+        val webUrl = getBaseUrl()
 
         if (savedMosqueId != null) {
-            // Load display for saved mosque
             val url = "${webUrl}?mosque=$savedMosqueId"
-            println("Loading display for mosque: $savedMosqueId")
             webView.loadUrl(url)
         } else {
-            // No mosque selected - load the selector screen
-            println("No mosque selected, showing selector")
             webView.loadUrl(webUrl)
         }
     }
@@ -93,11 +95,54 @@ class MainActivity : AppCompatActivity() {
      * Show the mosque picker (called on first launch or long-press BACK)
      */
     private fun showMosquePicker() {
-        // Clear saved mosque ID
         prefs.edit().remove(KEY_MOSQUE_ID).apply()
-        // Load the selector (no ?mosque= param)
-        val webUrl = BuildConfig.WEB_URL
-        webView.loadUrl(webUrl)
+        webView.loadUrl(getBaseUrl())
+    }
+
+    /**
+     * Show settings dialog to change base URL
+     * Triggered by long-press MENU or SETTINGS key
+     */
+    private fun showSettingsDialog() {
+        val currentUrl = getBaseUrl()
+
+        val input = EditText(this).apply {
+            setText(currentUrl)
+            setSelectAllOnFocus(true)
+            setSingleLine(true)
+            textSize = 16f
+        }
+
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(48, 32, 48, 0)
+            addView(input)
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Server URL")
+            .setMessage("Enter the base URL for your mosque signage server:")
+            .setView(container)
+            .setPositiveButton("Save & Reload") { _, _ ->
+                val newUrl = input.text.toString().trim().trimEnd('/')
+                if (newUrl.isNotEmpty()) {
+                    val urlWithSlash = "$newUrl/"
+                    prefs.edit()
+                        .putString(KEY_CUSTOM_URL, urlWithSlash)
+                        .remove(KEY_MOSQUE_ID)
+                        .apply()
+                    loadDisplay()
+                }
+            }
+            .setNeutralButton("Reset to Default") { _, _ ->
+                prefs.edit()
+                    .remove(KEY_CUSTOM_URL)
+                    .remove(KEY_MOSQUE_ID)
+                    .apply()
+                loadDisplay()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun setupTVWindow() {
@@ -150,7 +195,6 @@ class MainActivity : AppCompatActivity() {
             val currentSaved = prefs.getString(KEY_MOSQUE_ID, null)
             if (currentSaved != mosqueId) {
                 prefs.edit().putString(KEY_MOSQUE_ID, mosqueId).apply()
-                println("Saved mosque ID: $mosqueId")
             }
         }
     }
@@ -201,6 +245,12 @@ class MainActivity : AppCompatActivity() {
                 if (event?.repeatCount == 0) {
                     backPressStartTime = System.currentTimeMillis()
                 }
+            }
+            // Long-press MENU or SETTINGS key opens settings
+            KeyEvent.KEYCODE_MENU,
+            KeyEvent.KEYCODE_SETTINGS -> {
+                showSettingsDialog()
+                return true
             }
         }
         return super.onKeyDown(keyCode, event)
