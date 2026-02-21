@@ -239,6 +239,7 @@ html, body {
   height: 100vh;
   padding: 40px;
   text-align: center;
+  background: #0f1117;
 }
 
 .selector-screen h1 {
@@ -301,6 +302,7 @@ html, body {
   height: 100vh;
   padding: 40px;
   text-align: center;
+  background: #0f1117;
 }
 
 .error-screen h1 {

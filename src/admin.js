@@ -160,8 +160,8 @@ async function handleCreateMosque(e) {
         theme: {
           headerBg: 'rgba(26,26,26,0.8)',
           panelBg: 'rgba(26,26,26,0.8)',
-          accentColor: document.getElementById('nm-accent').value,
-          textColor: document.getElementById('nm-text-color').value,
+          accentColor: '#3b82f6',
+          textColor: '#ffffff',
         },
       },
       ayatHadith: 'default',
@@ -223,8 +223,6 @@ function populateDashboard() {
   // Display settings
   document.getElementById('ed-slideshow-interval').value = mc.display?.slideshowIntervalMs || 8000;
   document.getElementById('ed-ayat-interval').value = mc.display?.ayatRotationIntervalMs || 20000;
-  document.getElementById('ed-accent').value = mc.display?.theme?.accentColor || '#ffd700';
-  document.getElementById('ed-text-color').value = mc.display?.theme?.textColor || '#ffffff';
 }
 
 // === SAVE CHANGES ===
@@ -265,8 +263,8 @@ async function handleSaveChanges(e) {
         theme: {
           headerBg: 'rgba(26,26,26,0.8)',
           panelBg: 'rgba(26,26,26,0.8)',
-          accentColor: document.getElementById('ed-accent').value,
-          textColor: document.getElementById('ed-text-color').value,
+          accentColor: '#3b82f6',
+          textColor: '#ffffff',
         },
       },
     };
