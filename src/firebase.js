@@ -7,7 +7,7 @@
 // Replace these with your actual Firebase project values.
 const firebaseConfig = {
   apiKey: "AIzaSyARbUDcJ73ZWtcnaHtZ6hfwQCIiw1bqQSw",
-  authDomain: "mosque-signage-platform-8e2d3.firebaseapp.com",
+  authDomain: "mosque-signage-platform-8e2d3.web.app",
   projectId: "mosque-signage-platform-8e2d3",
   storageBucket: "mosque-signage-platform-8e2d3.firebasestorage.app",
   messagingSenderId: "166957039943",
