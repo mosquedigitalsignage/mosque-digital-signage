@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Mosque Digital Signage</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #1e293b;
+            background: #ffffff;
+            line-height: 1.7;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.25rem;
+        }
+        .updated {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        h2 {
+            font-size: 1.15rem;
+            margin-top: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+        p, ul {
+            margin-bottom: 1rem;
+            color: #334155;
+        }
+        ul {
+            padding-left: 1.5rem;
+        }
+        li {
+            margin-bottom: 0.35rem;
+        }
+        a {
+            color: #3b82f6;
+        }
+        .back {
+            display: inline-block;
+            margin-top: 2rem;
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Privacy Policy</h1>
+        <p class="updated">Last updated: February 22, 2026</p>
+
+        <p>Mosque Digital Signage ("we", "our", "the app") is a digital signage platform for mosques. This policy explains how we handle information when you use our Android TV app and web application.</p>
+
+        <h2>Information We Collect</h2>
+        <p><strong>Mosque administrators</strong> sign in with Google to configure their mosque's display settings. We store:</p>
+        <ul>
+            <li>Google account email address (for admin authentication)</li>
+            <li>Mosque configuration data (name, location zip code, display preferences)</li>
+            <li>Announcements and custom text entered by the admin</li>
+        </ul>
+        <p><strong>Display viewers and Android TV app users</strong> — we do not collect any personal information. The display app loads mosque data from our database and prayer times from a public API. No user accounts, tracking, or analytics are used on the display side.</p>
+
+        <h2>How We Use Information</h2>
+        <ul>
+            <li>Admin email is used solely to authenticate and authorize access to mosque settings</li>
+            <li>Zip code is used to fetch accurate prayer times from the Aladhan API</li>
+            <li>Google Drive folder IDs are used to load slideshow images configured by the admin</li>
+        </ul>
+
+        <h2>Data Storage</h2>
+        <p>Mosque configuration data is stored in Google Firebase Firestore. Admin authentication is handled by Firebase Authentication. All data is transmitted over HTTPS.</p>
+
+        <h2>Third-Party Services</h2>
+        <ul>
+            <li><strong>Firebase</strong> (Google) — authentication and data storage</li>
+            <li><strong>Google Drive API</strong> — loading images shared by the admin</li>
+            <li><strong>Aladhan API</strong> — prayer time calculations based on zip code</li>
+        </ul>
+        <p>These services have their own privacy policies. We do not sell or share data with any other third parties.</p>
+
+        <h2>Local Storage</h2>
+        <p>The app caches Google Drive image data in the device's local storage for performance. This cache is automatically refreshed every 24 hours. No personal data is stored locally.</p>
+
+        <h2>Children's Privacy</h2>
+        <p>Our app does not knowingly collect personal information from children under 13.</p>
+
+        <h2>Changes to This Policy</h2>
+        <p>We may update this privacy policy from time to time. Changes will be posted on this page with an updated date.</p>
+
+        <h2>Contact</h2>
+        <p>If you have questions about this privacy policy, contact us at <a href="mailto:mosquedigitalsignage@gmail.com">mosquedigitalsignage@gmail.com</a>.</p>
+
+        <a href="landing.html" class="back">&larr; Back to Mosque Digital Signage</a>
+    </div>
+</body>
+</html>
