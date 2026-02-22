@@ -98,4 +98,5 @@ Footer bar priority chain: enabled announcements > custom ayats > default `ayatH
 ## Deployment Notes
 
 - GitHub Pages base path: `/mosque-digital-signage/` (set in `vite.config.js`)
+- Privacy policy: `privacy.html` (deployed to GitHub Pages, used in Play Store listing)
 - Android TV release build: `cd android-tv-wrapper && ./gradlew bundleRelease` (requires `keystore.properties`)
