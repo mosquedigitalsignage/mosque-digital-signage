@@ -169,6 +169,53 @@
       line-height: 1.45;
     }
 
+    /* Devices */
+    .devices-section {
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .devices-section h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .devices {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .device {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+    }
+
+    .device-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      width: 28px;
+      text-align: center;
+    }
+
+    .device-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 1px;
+    }
+
+    .device p {
+      color: var(--text-secondary);
+      font-size: 0.83rem;
+      line-height: 1.4;
+    }
+
     /* Steps */
     .steps-section {
       padding: 40px 0;
@@ -257,6 +304,10 @@
 
       .feature { padding: 20px 24px; }
 
+      .devices-section { padding: 56px 0; }
+      .devices-section h2 { text-align: center; margin-bottom: 28px; }
+      .devices { grid-template-columns: 1fr 1fr; gap: 16px; }
+
       .steps-section {
         padding: 56px 0;
         text-align: center;
@@ -319,6 +370,40 @@
         <div class="feature">
           <div class="feature-label">QR Codes</div>
           <p>Donation links, event signups, or WiFi access</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="devices-section">
+      <h2>Works on any screen</h2>
+      <div class="devices">
+        <div class="device">
+          <div class="device-icon">&#x1F4FA;</div>
+          <div>
+            <div class="device-name">Android TV</div>
+            <p>Install our app from the Play Store on Sony, TCL, Hisense, Nvidia Shield, Xiaomi Mi Box, and more.</p>
+          </div>
+        </div>
+        <div class="device">
+          <div class="device-icon">&#x1F4E1;</div>
+          <div>
+            <div class="device-name">Chromecast with Google TV</div>
+            <p>Runs Android TV natively. Install the app and plug into any TV or monitor with HDMI.</p>
+          </div>
+        </div>
+        <div class="device">
+          <div class="device-icon">&#x1F310;</div>
+          <div>
+            <div class="device-name">Any TV with a web browser</div>
+            <p>Samsung, LG, and other smart TVs can open the display URL directly in their built-in browser.</p>
+          </div>
+        </div>
+        <div class="device">
+          <div class="device-icon">&#x1F4BB;</div>
+          <div>
+            <div class="device-name">Computer or Raspberry Pi</div>
+            <p>Open the URL in Chrome, Firefox, or Edge on any device connected to a TV or monitor.</p>
+          </div>
         </div>
       </div>
     </section>
