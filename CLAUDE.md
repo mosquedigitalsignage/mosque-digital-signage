@@ -82,9 +82,13 @@ CSS custom properties in `:root` are overridden at runtime from Firestore `displ
 
 Three-row flex layout: Header (60px) | Content Row (Prayer Times flex:1 | Slideshow flex:2 | QR Codes flex:1) | Footer/Ayat (60px). TV optimization triggers at viewport width >= 1920px.
 
+### Announcements & Custom Ayats
+
+Footer bar priority chain: enabled announcements > custom ayats > default `ayatHadithList` (40 items in `config.js`). Announcements get bold styling with customizable color (`display.announcementColor`). On mobile, announcements show in a banner below the header instead of the footer.
+
 ### Android TV Wrapper
 
-`android-tv-wrapper/` — Kotlin/Gradle Android TV app (package `com.mosquesignage.tv`, SDK 34) wrapping the web app in a WebView. First launch shows mosque picker; selection persists in SharedPreferences. Long-press BACK (3s) re-shows picker.
+`android-tv-wrapper/` — Kotlin/Gradle Android TV app (package `com.mosquesignage.tv`, SDK 34) wrapping the web app in a WebView. First launch shows mosque picker; selection persists in SharedPreferences. Long-press BACK (3s) re-shows picker. MENU/SETTINGS key opens server URL config dialog. Release signing via `keystore.properties` (gitignored).
 
 ## Firebase Project
 
@@ -94,4 +98,4 @@ Three-row flex layout: Header (60px) | Content Row (Prayer Times flex:1 | Slides
 ## Deployment Notes
 
 - GitHub Pages base path: `/mosque-digital-signage/` (set in `vite.config.js`)
-- `android-tv-wrapper/app/build.gradle` contains `YOUR_ORG` placeholder in `WEB_URL` — replace before building the Android app
+- Android TV release build: `cd android-tv-wrapper && ./gradlew bundleRelease` (requires `keystore.properties`)
