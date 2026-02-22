@@ -100,3 +100,35 @@ Footer bar priority chain: enabled announcements > custom ayats > default `ayatH
 - GitHub Pages base path: `/mosque-digital-signage/` (set in `vite.config.js`)
 - Privacy policy: `privacy.html` (deployed to GitHub Pages, used in Play Store listing)
 - Android TV release build: `cd android-tv-wrapper && ./gradlew bundleRelease` (requires `keystore.properties`)
+
+## Play Store Publishing
+
+### Release Build
+```bash
+cd android-tv-wrapper
+./gradlew bundleRelease    # Output: app/build/outputs/bundle/release/app-release.aab
+```
+Requires `keystore.properties` (gitignored) pointing to `mosque-signage.jks`. Both files must be kept safe — losing them means you cannot update the app on Play Store.
+
+### Version Bumps
+Before each Play Store update, increment in `android-tv-wrapper/app/build.gradle`:
+- `versionCode` — integer, must increase every release (e.g. 1 → 2 → 3)
+- `versionName` — user-facing string (e.g. "1.0" → "1.1")
+
+### Store Assets
+All Play Store assets are in `android-tv-wrapper/store-assets/`:
+- `screenshot-1.png` — Display screen (1920x1080, taken from emulator)
+- `screenshot-2.png` — Mosque selector screen (1920x1080, taken from emulator)
+- `feature-graphic.png` — Play Store banner (1024x500)
+- `store-listing.md` — Short description, full description, category, tags
+
+Other assets:
+- `android-tv-wrapper/app/src/main/ic_launcher-playstore.png` — 512x512 app icon for Play Store
+- Privacy policy URL: `https://mosquedigitalsignage.github.io/mosque-digital-signage/privacy.html`
+
+### Update Workflow
+1. Make code changes and test on emulator
+2. Bump `versionCode` and `versionName` in `app/build.gradle`
+3. Run `./gradlew bundleRelease`
+4. Upload new `app-release.aab` to Play Console
+5. Update screenshots in `store-assets/` if UI changed
