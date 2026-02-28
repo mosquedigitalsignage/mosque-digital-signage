@@ -29,6 +29,12 @@ function cacheKey(suffix) {
   return `mosque_${mosqueId}_${suffix}`;
 }
 
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = String(str);
+  return div.innerHTML;
+}
+
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
 // === APP INITIALIZATION ===
@@ -189,7 +195,7 @@ async function showPostLoginSelector(user, adminRecord) {
             <img src="${mosqueIconUrl}" alt="" class="selector-logo-img sm" />
             <span>Mosque Digital Signage</span>
           </div>
-          <div class="selector-user">${user.email}</div>
+          <div class="selector-user">${escapeHtml(user.email)}</div>
         </div>
 
         <div class="selector-panel">
@@ -200,8 +206,8 @@ async function showPostLoginSelector(user, adminRecord) {
               : userMosques.map(m => `
                 <a href="?mosque=${m.id}" class="mosque-card">
                   <div class="mosque-card-info">
-                    <div class="mosque-card-name">${m.name}</div>
-                    ${m.shortName ? `<div class="mosque-card-short">${m.shortName}</div>` : ''}
+                    <div class="mosque-card-name">${escapeHtml(m.name)}</div>
+                    ${m.shortName ? `<div class="mosque-card-short">${escapeHtml(m.shortName)}</div>` : ''}
                   </div>
                   <div class="mosque-card-arrow">&rarr;</div>
                 </a>
@@ -260,8 +266,8 @@ async function showPostLoginSelector(user, adminRecord) {
         const limited = allMosques.slice(0, 100);
         listEl.innerHTML = limited.map(m => `
           <a href="?mosque=${m.id}" class="mosque-card">
-            <div class="mosque-card-name">${m.name}</div>
-            ${m.shortName ? `<div class="mosque-card-short">${m.shortName}</div>` : ''}
+            <div class="mosque-card-name">${escapeHtml(m.name)}</div>
+            ${m.shortName ? `<div class="mosque-card-short">${escapeHtml(m.shortName)}</div>` : ''}
           </a>
         `).join('');
       }
@@ -669,7 +675,11 @@ function initAyatRotation() {
   function showAyat(idx) {
     const ayat = list[idx];
     const en = ayat.en.replace(/[.]+(?=\s*\()/, '');
-    ayatsContent.innerHTML = `<div class="ayat-text">${en}</div>`;
+    ayatsContent.innerHTML = '';
+    const ayatDiv = document.createElement('div');
+    ayatDiv.className = 'ayat-text';
+    ayatDiv.textContent = en;
+    ayatsContent.appendChild(ayatDiv);
     if (mobileAnn && enabledAnnouncements.length > 0) {
       mobileAnn.textContent = en;
     }

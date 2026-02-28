@@ -342,7 +342,7 @@ function renderAnnouncementsList() {
     const item = document.createElement('div');
     item.className = 'managed-item' + (ann.enabled ? '' : ' disabled');
     item.innerHTML = `
-      <span class="managed-item-text">${ann.text}</span>
+      <span class="managed-item-text"></span>
       <div class="managed-item-actions">
         <button class="btn btn-sm btn-outline" data-action="toggle" data-idx="${idx}">
           ${ann.enabled ? 'Disable' : 'Enable'}
@@ -350,6 +350,7 @@ function renderAnnouncementsList() {
         <button class="btn btn-sm btn-danger" data-action="delete" data-idx="${idx}">Delete</button>
       </div>
     `;
+    item.querySelector('.managed-item-text').textContent = ann.text;
     listEl.appendChild(item);
   });
 
