@@ -54,9 +54,9 @@ URL ?mosque={uuid}
 ### Firestore Data Model
 
 - `mosques/{uuid}` — Full mosque config: `mosque{}`, `location{}`, `prayerTimes{}`, `googleDrive{}`, `display{}`
-- `admins/{firebase-uid}` — Admin-to-mosque mapping: `mosqueId`, `email`, `role`
+- `admins/{firebase-uid}` — Admin-to-mosque mapping: `mosqueIds[]` (array of mosque UUIDs), `email`, `role`. Legacy records may have `mosqueId` (string) — use `normalizeAdminRecord()` from `firebase.js` for backwards compat.
 
-Security rules (`firestore.rules`): mosques are publicly readable; writes require auth and ownership check via admin record lookup.
+Security rules (`firestore.rules`): mosques are publicly readable; writes require auth and ownership check (`mosqueId in adminRecord.mosqueIds`).
 
 ### Google Drive Folder Structure (Per Mosque)
 
@@ -101,34 +101,55 @@ Footer bar priority chain: enabled announcements > custom ayats > default `ayatH
 - Privacy policy: `privacy.html` (deployed to GitHub Pages, used in Play Store listing)
 - Android TV release build: `cd android-tv-wrapper && ./gradlew bundleRelease` (requires `keystore.properties`)
 
-## Play Store Publishing
+## Release Process
 
-### Release Build
+When the user asks to "release", "publish", or "push a new version", follow this full checklist:
+
+### 1. Deploy Web App
+```bash
+npm run build-deploy                    # Build + deploy to GitHub Pages
+```
+
+### 2. Deploy Firestore Rules (if changed)
+```bash
+firebase deploy --only firestore:rules --project mosque-signage-platform-8e2d3
+```
+Requires `firebase login` first (must be run in an interactive terminal).
+
+### 3. Version Bump
+Increment in `android-tv-wrapper/app/build.gradle`:
+- `versionCode` — integer, must increase every release (e.g. 4 → 5 → 6)
+- `versionName` — user-facing string (e.g. "1.2" → "1.3")
+
+### 4. Build Android TV Release
 ```bash
 cd android-tv-wrapper
 ./gradlew bundleRelease    # Output: app/build/outputs/bundle/release/app-release.aab
 ```
 Requires `keystore.properties` (gitignored) pointing to `mosque-signage.jks`. Both files must be kept safe — losing them means you cannot update the app on Play Store.
 
-### Version Bumps
-Before each Play Store update, increment in `android-tv-wrapper/app/build.gradle`:
-- `versionCode` — integer, must increase every release (e.g. 1 → 2 → 3)
-- `versionName` — user-facing string (e.g. "1.0" → "1.1")
-
-### Store Assets
+### 5. Update Store Assets
 All Play Store assets are in `android-tv-wrapper/store-assets/`:
-- `screenshot-1.png` — Display screen (1920x1080, taken from emulator)
-- `screenshot-2.png` — Mosque selector screen (1920x1080, taken from emulator)
+- `screenshot-1.png` — Display screen (1920x1080)
+- `screenshot-2.png` — Mosque selector screen (1920x1080)
 - `feature-graphic.png` — Play Store banner (1024x500)
 - `store-listing.md` — Short description, full description, category, tags
+- `release-notes.md` — Per-version "What's New" text and changelog
 
 Other assets:
 - `android-tv-wrapper/app/src/main/ic_launcher-playstore.png` — 512x512 app icon for Play Store
 - Privacy policy URL: `https://mosquedigitalsignage.github.io/mosque-digital-signage/privacy.html`
 
-### Update Workflow
-1. Make code changes and test on emulator
-2. Bump `versionCode` and `versionName` in `app/build.gradle`
-3. Run `./gradlew bundleRelease`
-4. Upload new `app-release.aab` to Play Console
-5. Update screenshots in `store-assets/` if UI changed
+### 6. Commit, Tag, and Push
+```bash
+git add <changed files>
+git commit -m "Bump version to v{X.Y} with <summary>"
+git tag v{X.Y}_{YYYY.MM.DD}
+git push && git push origin v{X.Y}_{YYYY.MM.DD}
+```
+Tag format: `v{version}_{YYYY.MM.DD}` (e.g. `v1.3_2026.02.28`).
+
+### 7. Upload to Play Console
+- Upload `app-release.aab` to Google Play Console
+- Paste "What's New" text from `release-notes.md` (500 char max for Play Store)
+- Update screenshots if UI changed
