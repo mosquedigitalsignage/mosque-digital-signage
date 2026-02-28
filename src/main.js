@@ -10,7 +10,7 @@ import {
   getDriveImageUrl,
 } from './config.js';
 
-import { initFirebase, fetchMosqueConfig, fetchAllMosques } from './firebase.js';
+import { initFirebase, fetchMosqueConfig, fetchAllMosques, signInWithGoogle, fetchAdminRecord } from './firebase.js';
 
 // === GLOBAL STATE ===
 let mosqueConfig = null;
@@ -94,20 +94,39 @@ async function initAllModules() {
   scheduleReload();
 }
 
+// === DEVICE DETECTION ===
+function isTVDevice() {
+  const ua = navigator.userAgent.toLowerCase();
+  return ua.includes('tv') || ua.includes('leanback') || ua.includes('mosque-digital-signage-tv')
+    || window.innerWidth >= 1920;
+}
+
 // === MOSQUE SELECTOR SCREEN ===
 async function showMosqueSelector() {
   const layout = document.querySelector('.main-layout');
   if (!layout) return;
 
+  const showSignIn = !isTVDevice();
+
   layout.innerHTML = `
     <div class="selector-screen">
       <h1>Mosque Digital Signage</h1>
       <p>Select your mosque</p>
+      ${showSignIn ? `
+        <button class="admin-signin-btn" id="admin-signin-btn">Sign in as Admin</button>
+        <div class="signin-divider"><span>or browse all mosques</span></div>
+      ` : ''}
       <div class="mosque-list" id="mosque-list">
         <p class="loading-text">Loading mosques...</p>
       </div>
     </div>
   `;
+
+  // Set up admin sign-in button
+  if (showSignIn) {
+    const signinBtn = document.getElementById('admin-signin-btn');
+    signinBtn.addEventListener('click', handleAdminSignIn);
+  }
 
   const listEl = document.getElementById('mosque-list');
 
@@ -133,6 +152,38 @@ async function showMosqueSelector() {
   } catch (err) {
     console.error('Failed to load mosques:', err);
     listEl.innerHTML = '<p class="error-text">Failed to load mosques. Please check your connection and try again.</p>';
+  }
+}
+
+// === ADMIN SIGN-IN (mobile only) ===
+async function handleAdminSignIn() {
+  const btn = document.getElementById('admin-signin-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+  }
+
+  try {
+    const result = await signInWithGoogle();
+    const uid = result.user.uid;
+    const adminRecord = await fetchAdminRecord(uid);
+
+    if (adminRecord && adminRecord.mosqueId) {
+      window.location.href = `?mosque=${adminRecord.mosqueId}`;
+    } else {
+      if (btn) {
+        btn.textContent = 'No mosque found for this account';
+        btn.disabled = false;
+        setTimeout(() => { btn.textContent = 'Sign in as Admin'; }, 3000);
+      }
+    }
+  } catch (err) {
+    console.error('Admin sign-in failed:', err);
+    if (btn) {
+      btn.textContent = 'Sign-in failed. Try again.';
+      btn.disabled = false;
+      setTimeout(() => { btn.textContent = 'Sign in as Admin'; }, 3000);
+    }
   }
 }
 
