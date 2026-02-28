@@ -1,5 +1,17 @@
 # Release Notes
 
+## v1.3.1 (2026.02.28)
+
+**What's New:**
+- Android TV remote BACK button now returns to mosque selector from display
+- Short press BACK on display goes to selector; on selector exits the app
+- Long-press BACK (3s) still resets saved mosque as before
+
+**Play Store "What's New" (paste into Play Console):**
+TV remote BACK button now returns to mosque selector from the display screen. Sign in with Google, manage multiple mosques, link by UUID, and enjoy the redesigned modern selector. Your mosque auto-loads on future launches.
+
+---
+
 ## v1.3 (2026.02.28)
 
 **What's New:**
