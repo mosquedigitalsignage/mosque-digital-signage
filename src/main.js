@@ -68,10 +68,25 @@ function applyConfig() {
   // Page title
   document.title = mc.mosque?.pageTitle || mc.mosque?.name || 'Mosque Digital Signage';
 
-  // Header text
+  // Header text with back button
   const header = document.querySelector('.header');
   if (header) {
-    header.textContent = mc.mosque?.headerText || `Welcome to ${mc.mosque?.name || 'Our Mosque'}`;
+    const headerText = mc.mosque?.headerText || `Welcome to ${mc.mosque?.name || 'Our Mosque'}`;
+    header.innerHTML = '';
+
+    const backBtn = document.createElement('button');
+    backBtn.className = 'header-back-btn';
+    backBtn.innerHTML = '&#x2190;';
+    backBtn.title = 'Back to mosque selector';
+    backBtn.addEventListener('click', () => {
+      window.location.href = window.location.pathname;
+    });
+    header.appendChild(backBtn);
+
+    const headerSpan = document.createElement('span');
+    headerSpan.className = 'header-text';
+    headerSpan.textContent = headerText;
+    header.appendChild(headerSpan);
   }
 
   // Apply theme via CSS custom properties

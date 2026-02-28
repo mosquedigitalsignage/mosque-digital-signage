@@ -54,6 +54,31 @@ html, body {
   padding: 10px;
   border-radius: 8px;
   margin: 10px;
+  position: relative;
+}
+
+.header-text {
+  flex: 1;
+}
+
+.header-back-btn {
+  position: absolute;
+  left: 12px;
+  background: none;
+  border: none;
+  color: var(--text-color, #ffffff);
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0.15;
+  transition: opacity 0.3s;
+  padding: 4px 10px;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.header-back-btn:hover {
+  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Row 2: Content Row - Three Columns */
