@@ -104,10 +104,15 @@ async function showMosqueSelector() {
 
   layout.innerHTML = `
     <div class="selector-screen">
-      <h1>Mosque Digital Signage</h1>
-      <p>Sign in to load your mosque</p>
-      <button class="admin-signin-btn" id="admin-signin-btn">Sign in with Google</button>
-      <div id="signin-status"></div>
+      <div class="selector-card">
+        <div class="selector-brand">
+          <div class="selector-logo">M</div>
+          <h1>Mosque Digital Signage</h1>
+        </div>
+        <p class="selector-subtitle">Sign in to manage and view your mosque displays</p>
+        <button class="admin-signin-btn" id="admin-signin-btn">Sign in with Google</button>
+        <div id="signin-status"></div>
+      </div>
     </div>
   `;
 
@@ -161,43 +166,65 @@ async function showPostLoginSelector(user, adminRecord) {
 
   layout.innerHTML = `
     <div class="selector-screen">
-      <h1>Mosque Digital Signage</h1>
-      <p class="selector-welcome">Welcome, ${user.email}</p>
-
-      <div class="selector-section">
-        <h2 class="selector-section-title">Your Mosques</h2>
-        <div class="mosque-list" id="user-mosque-list">
-          ${userMosques.length === 0
-            ? '<p class="selector-empty">No mosques linked to your account yet.</p>'
-            : userMosques.map(m => `
-              <a href="?mosque=${m.id}" class="mosque-card">
-                <div class="mosque-card-name">${m.name}</div>
-                ${m.shortName ? `<div class="mosque-card-short">${m.shortName}</div>` : ''}
-              </a>
-            `).join('')}
+      <div class="selector-container">
+        <div class="selector-topbar">
+          <div class="selector-brand-sm">
+            <div class="selector-logo sm">M</div>
+            <span>Mosque Digital Signage</span>
+          </div>
+          <div class="selector-user">${user.email}</div>
         </div>
-      </div>
 
-      <div class="selector-divider"></div>
-
-      <div class="selector-actions">
-        <a href="${adminBaseUrl}" class="selector-action-btn">+ Create New Mosque</a>
-        <div class="selector-link-form">
-          <input type="text" id="link-mosque-uuid" class="selector-uuid-input" placeholder="Enter Mosque UUID" />
-          <button class="selector-action-btn" id="link-mosque-btn">Link</button>
-        </div>
-        <div id="link-status" class="selector-link-status"></div>
-      </div>
-
-      ${isSuperUser ? `
-        <div class="selector-divider"></div>
-        <div class="selector-section">
-          <h2 class="selector-section-title">All Mosques (admin)</h2>
-          <div class="mosque-list" id="all-mosque-list">
-            <p class="loading-text">Loading...</p>
+        <div class="selector-panel">
+          <h2 class="selector-panel-title">Your Mosques</h2>
+          <div class="mosque-list" id="user-mosque-list">
+            ${userMosques.length === 0
+              ? '<div class="selector-empty-state"><p>No mosques linked to your account yet.</p><p>Create a new mosque or link an existing one below.</p></div>'
+              : userMosques.map(m => `
+                <a href="?mosque=${m.id}" class="mosque-card">
+                  <div class="mosque-card-info">
+                    <div class="mosque-card-name">${m.name}</div>
+                    ${m.shortName ? `<div class="mosque-card-short">${m.shortName}</div>` : ''}
+                  </div>
+                  <div class="mosque-card-arrow">&rarr;</div>
+                </a>
+              `).join('')}
           </div>
         </div>
-      ` : ''}
+
+        <div class="selector-panel">
+          <h2 class="selector-panel-title">Add a Mosque</h2>
+          <div class="selector-add-options">
+            <a href="${adminBaseUrl}" class="selector-option-card">
+              <div class="selector-option-icon">+</div>
+              <div class="selector-option-info">
+                <div class="selector-option-title">Create New Mosque</div>
+                <div class="selector-option-desc">Set up a new mosque from scratch</div>
+              </div>
+            </a>
+            <div class="selector-option-card link-form-card">
+              <div class="selector-option-icon">#</div>
+              <div class="selector-option-info">
+                <div class="selector-option-title">Link Existing Mosque</div>
+                <div class="selector-link-form">
+                  <input type="text" id="link-mosque-uuid" class="selector-uuid-input" placeholder="Paste mosque UUID" />
+                  <button class="selector-link-btn" id="link-mosque-btn">Link</button>
+                </div>
+                <div id="link-status" class="selector-link-status"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        ${isSuperUser ? `
+          <div class="selector-panel">
+            <h2 class="selector-panel-title">All Mosques <span class="selector-badge">Admin</span></h2>
+            <div class="mosque-list" id="all-mosque-list">
+              <p class="loading-text">Loading all mosques...</p>
+            </div>
+          </div>
+        ` : ''}
+      </div>
     </div>
   `;
 
