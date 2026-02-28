@@ -20,10 +20,10 @@
     <!-- Keep CPU awake -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
-    <!-- TV-specific features -->
+    <!-- TV-specific features (optional so app also works on phones/tablets) -->
     <uses-feature
         android:name="android.software.leanback"
-        android:required="true" />
+        android:required="false" />
 
     <!-- Touch screen not required for TV -->
     <uses-feature
@@ -47,7 +47,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
             android:logo="@mipmap/ic_launcher"
-            android:screenOrientation="landscape"
+            android:screenOrientation="unspecified"
             android:theme="@style/Theme.MosqueSignage.Fullscreen"
             android:launchMode="singleTask"
             android:clearTaskOnLaunch="true"
