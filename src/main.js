@@ -10,7 +10,7 @@ import {
   getDriveImageUrl,
 } from './config.js';
 
-import { initFirebase, fetchMosqueConfig, signInWithGoogle, fetchAdminRecord } from './firebase.js';
+import { initFirebase, fetchMosqueConfig, signInWithGoogle, fetchAdminRecord, fetchAllMosques, addMosqueToAdmin, normalizeAdminRecord } from './firebase.js';
 
 // === GLOBAL STATE ===
 let mosqueConfig = null;
@@ -94,6 +94,9 @@ async function initAllModules() {
   scheduleReload();
 }
 
+// === SUPER USER ===
+const SUPER_USER_EMAIL = 'mosquedigitalsignage@gmail.com';
+
 // === MOSQUE SELECTOR SCREEN ===
 async function showMosqueSelector() {
   const layout = document.querySelector('.main-layout');
@@ -110,7 +113,6 @@ async function showMosqueSelector() {
 
   const signinBtn = document.getElementById('admin-signin-btn');
   signinBtn.addEventListener('click', handleAdminSignIn);
-
 }
 
 // === ADMIN SIGN-IN ===
@@ -124,20 +126,10 @@ async function handleAdminSignIn() {
 
   try {
     const result = await signInWithGoogle();
-    const uid = result.user.uid;
-    if (status) status.textContent = 'Looking up your mosque...';
-    const adminRecord = await fetchAdminRecord(uid);
-
-    if (adminRecord && adminRecord.mosqueId) {
-      if (status) status.textContent = 'Loading your mosque display...';
-      window.location.href = `?mosque=${adminRecord.mosqueId}`;
-    } else {
-      if (status) status.textContent = 'No mosque found for this account. Set one up in the admin dashboard first.';
-      if (btn) {
-        btn.textContent = 'Sign in with Google';
-        btn.disabled = false;
-      }
-    }
+    const user = result.user;
+    if (status) status.textContent = 'Looking up your mosques...';
+    const adminRecord = normalizeAdminRecord(await fetchAdminRecord(user.uid));
+    showPostLoginSelector(user, adminRecord);
   } catch (err) {
     console.error('Admin sign-in failed:', err);
     if (status) status.textContent = 'Sign-in failed. Please try again.';
@@ -145,6 +137,138 @@ async function handleAdminSignIn() {
       btn.textContent = 'Sign in with Google';
       btn.disabled = false;
     }
+  }
+}
+
+// === POST-LOGIN SELECTOR ===
+async function showPostLoginSelector(user, adminRecord) {
+  const layout = document.querySelector('.main-layout');
+  if (!layout) return;
+
+  const isSuperUser = user.email === SUPER_USER_EMAIL;
+
+  // Fetch names for user's mosques
+  let userMosques = [];
+  if (adminRecord && adminRecord.mosqueIds.length > 0) {
+    const fetches = adminRecord.mosqueIds.map(async (id) => {
+      const config = await fetchMosqueConfig(id);
+      return { id, name: config?.mosque?.name || 'Unknown Mosque', shortName: config?.mosque?.shortName || '' };
+    });
+    userMosques = await Promise.all(fetches);
+  }
+
+  const adminBaseUrl = window.location.origin + window.location.pathname.replace(/\/index\.html$/, '/') + 'admin.html';
+
+  layout.innerHTML = `
+    <div class="selector-screen">
+      <h1>Mosque Digital Signage</h1>
+      <p class="selector-welcome">Welcome, ${user.email}</p>
+
+      <div class="selector-section">
+        <h2 class="selector-section-title">Your Mosques</h2>
+        <div class="mosque-list" id="user-mosque-list">
+          ${userMosques.length === 0
+            ? '<p class="selector-empty">No mosques linked to your account yet.</p>'
+            : userMosques.map(m => `
+              <a href="?mosque=${m.id}" class="mosque-card">
+                <div class="mosque-card-name">${m.name}</div>
+                ${m.shortName ? `<div class="mosque-card-short">${m.shortName}</div>` : ''}
+              </a>
+            `).join('')}
+        </div>
+      </div>
+
+      <div class="selector-divider"></div>
+
+      <div class="selector-actions">
+        <a href="${adminBaseUrl}" class="selector-action-btn">+ Create New Mosque</a>
+        <div class="selector-link-form">
+          <input type="text" id="link-mosque-uuid" class="selector-uuid-input" placeholder="Enter Mosque UUID" />
+          <button class="selector-action-btn" id="link-mosque-btn">Link</button>
+        </div>
+        <div id="link-status" class="selector-link-status"></div>
+      </div>
+
+      ${isSuperUser ? `
+        <div class="selector-divider"></div>
+        <div class="selector-section">
+          <h2 class="selector-section-title">All Mosques (admin)</h2>
+          <div class="mosque-list" id="all-mosque-list">
+            <p class="loading-text">Loading...</p>
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+
+  // Link mosque button
+  document.getElementById('link-mosque-btn')?.addEventListener('click', () => handleLinkMosque(user, adminRecord));
+  document.getElementById('link-mosque-uuid')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleLinkMosque(user, adminRecord);
+  });
+
+  // Load all mosques for super user
+  if (isSuperUser) {
+    try {
+      const allMosques = await fetchAllMosques();
+      const listEl = document.getElementById('all-mosque-list');
+      if (listEl) {
+        const limited = allMosques.slice(0, 100);
+        listEl.innerHTML = limited.map(m => `
+          <a href="?mosque=${m.id}" class="mosque-card">
+            <div class="mosque-card-name">${m.name}</div>
+            ${m.shortName ? `<div class="mosque-card-short">${m.shortName}</div>` : ''}
+          </a>
+        `).join('');
+      }
+    } catch (err) {
+      console.error('Failed to load all mosques:', err);
+      const listEl = document.getElementById('all-mosque-list');
+      if (listEl) listEl.innerHTML = '<p class="error-text">Failed to load mosques.</p>';
+    }
+  }
+}
+
+// === LINK MOSQUE ===
+async function handleLinkMosque(user, adminRecord) {
+  const input = document.getElementById('link-mosque-uuid');
+  const status = document.getElementById('link-status');
+  const uuid = input?.value.trim();
+
+  if (!uuid) {
+    if (status) status.textContent = 'Please enter a mosque UUID.';
+    return;
+  }
+
+  if (status) status.textContent = 'Checking mosque...';
+
+  try {
+    const config = await fetchMosqueConfig(uuid);
+    if (!config) {
+      if (status) { status.textContent = 'Mosque not found. Check the UUID and try again.'; status.className = 'selector-link-status error'; }
+      return;
+    }
+
+    // Add to admin's mosqueIds
+    if (adminRecord) {
+      await addMosqueToAdmin(user.uid, uuid);
+      adminRecord.mosqueIds.push(uuid);
+    } else {
+      // Create admin record if none exists
+      const { createAdminRecord } = await import('./firebase.js');
+      await createAdminRecord(user.uid, {
+        mosqueIds: [uuid],
+        email: user.email,
+        role: 'mosque_admin',
+        createdAt: new Date().toISOString(),
+      });
+    }
+
+    if (status) status.textContent = 'Mosque linked! Loading display...';
+    window.location.href = `?mosque=${uuid}`;
+  } catch (err) {
+    console.error('Failed to link mosque:', err);
+    if (status) { status.textContent = 'Failed to link mosque. Please try again.'; status.className = 'selector-link-status error'; }
   }
 }
 

@@ -11,6 +11,8 @@ import {
   createMosque,
   createAdminRecord,
   updateMosque,
+  addMosqueToAdmin,
+  normalizeAdminRecord,
 } from './firebase.js';
 
 // === SCREENS ===
@@ -115,11 +117,11 @@ function init() {
 // === LOAD ADMIN DATA ===
 async function loadAdminData() {
   try {
-    adminRecord = await fetchAdminRecord(currentUser.uid);
+    adminRecord = normalizeAdminRecord(await fetchAdminRecord(currentUser.uid));
 
-    if (adminRecord && adminRecord.mosqueId) {
-      // Existing admin - load their mosque
-      mosqueId = adminRecord.mosqueId;
+    if (adminRecord && adminRecord.mosqueIds.length > 0) {
+      // Existing admin - load their primary mosque
+      mosqueId = adminRecord.mosqueIds[0];
       mosqueConfig = await fetchMosqueConfig(mosqueId);
       if (mosqueConfig) {
         populateDashboard();
@@ -188,15 +190,22 @@ async function handleCreateMosque(e) {
 
     await createMosque(mosqueId, config);
 
-    await createAdminRecord(currentUser.uid, {
-      mosqueId,
-      email: currentUser.email,
-      role: 'mosque_admin',
-      createdAt: new Date().toISOString(),
-    });
+    if (adminRecord && adminRecord.mosqueIds) {
+      // Existing admin — append to mosqueIds
+      await addMosqueToAdmin(currentUser.uid, mosqueId);
+      adminRecord.mosqueIds.push(mosqueId);
+    } else {
+      // New admin — create record with mosqueIds array
+      await createAdminRecord(currentUser.uid, {
+        mosqueIds: [mosqueId],
+        email: currentUser.email,
+        role: 'mosque_admin',
+        createdAt: new Date().toISOString(),
+      });
+      adminRecord = { mosqueIds: [mosqueId], email: currentUser.email, role: 'mosque_admin' };
+    }
 
     mosqueConfig = config;
-    adminRecord = { mosqueId, email: currentUser.email, role: 'mosque_admin' };
 
     populateDashboard();
     showScreen('dashboard');

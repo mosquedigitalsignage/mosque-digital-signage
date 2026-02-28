@@ -123,6 +123,36 @@ export async function createAdminRecord(uid, data) {
 }
 
 /**
+ * Add a mosque ID to an admin's mosqueIds array.
+ * @param {string} uid - Firebase Auth UID
+ * @param {string} mosqueId - Mosque UUID to add
+ * @returns {Promise<void>}
+ */
+export async function addMosqueToAdmin(uid, mosqueId) {
+  const db = getDb();
+  await db.collection('admins').doc(uid).update({
+    mosqueIds: firebase.firestore.FieldValue.arrayUnion(mosqueId),
+  });
+}
+
+/**
+ * Normalize an admin record for backwards compatibility.
+ * Converts old `mosqueId` string field to `mosqueIds` array.
+ * @param {object|null} record - Raw admin record from Firestore
+ * @returns {object|null} Normalized record with mosqueIds array
+ */
+export function normalizeAdminRecord(record) {
+  if (!record) return null;
+  if (!record.mosqueIds && record.mosqueId) {
+    record.mosqueIds = [record.mosqueId];
+  }
+  if (!record.mosqueIds) {
+    record.mosqueIds = [];
+  }
+  return record;
+}
+
+/**
  * Sign in with Google popup.
  * @returns {Promise<firebase.auth.UserCredential>}
  */
