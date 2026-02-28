@@ -12,6 +12,8 @@ import {
 
 import { initFirebase, fetchMosqueConfig, signInWithGoogle, fetchAdminRecord, fetchAllMosques, addMosqueToAdmin, normalizeAdminRecord } from './firebase.js';
 
+import mosqueIconUrl from '/mosque-icon.svg?url';
+
 // === GLOBAL STATE ===
 let mosqueConfig = null;
 let mosqueId = null;
@@ -106,7 +108,7 @@ async function showMosqueSelector() {
     <div class="selector-screen">
       <div class="selector-card">
         <div class="selector-brand">
-          <img src="./mosque-icon.svg" alt="" class="selector-logo-img" />
+          <img src="${mosqueIconUrl}" alt="" class="selector-logo-img" />
           <h1>Mosque Digital Signage</h1>
         </div>
         <p class="selector-subtitle">Sign in to manage and view your mosque displays</p>
@@ -169,7 +171,7 @@ async function showPostLoginSelector(user, adminRecord) {
       <div class="selector-container">
         <div class="selector-topbar">
           <div class="selector-brand-sm">
-            <img src="./mosque-icon.svg" alt="" class="selector-logo-img sm" />
+            <img src="${mosqueIconUrl}" alt="" class="selector-logo-img sm" />
             <span>Mosque Digital Signage</span>
           </div>
           <div class="selector-user">${user.email}</div>
