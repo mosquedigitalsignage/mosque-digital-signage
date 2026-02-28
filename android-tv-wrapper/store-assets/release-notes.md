@@ -1,5 +1,20 @@
 # Release Notes
 
+## v1.4 (2026.02.28)
+
+**What's New:**
+- Security hardening: XSS vulnerabilities fixed in announcements, ayat text, and mosque name display
+- Superuser access now verified via Firestore role instead of hardcoded email
+- URL parameter validation prevents malformed mosque IDs from querying Firestore
+- WebView blocks mixed HTTP/HTTPS content (MIXED_CONTENT_NEVER_ALLOW)
+- Android network security config enforces HTTPS-only traffic
+- Content Security Policy headers added to web app
+
+**Play Store "What's New" (paste into Play Console):**
+Security update: hardened against XSS, enforced HTTPS-only traffic, and improved input validation throughout the app.
+
+---
+
 ## v1.3.1 (2026.02.28)
 
 **What's New:**
