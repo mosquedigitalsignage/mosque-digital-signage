@@ -67,10 +67,13 @@ class MainActivity : AppCompatActivity() {
         // Load the appropriate URL
         loadDisplay()
 
-        // Set up back press handling
+        // Set up back press handling (fallback for non-key events)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (webView.canGoBack()) {
+                val currentUrl = webView.url ?: ""
+                if (currentUrl.contains("mosque=")) {
+                    showMosquePicker()
+                } else if (webView.canGoBack()) {
                     webView.goBack()
                 } else {
                     finish()
@@ -260,11 +263,17 @@ class MainActivity : AppCompatActivity() {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             val pressDuration = System.currentTimeMillis() - backPressStartTime
             if (pressDuration >= longPressThresholdMs) {
-                // Long-press BACK = show mosque picker
+                // Long-press BACK = show mosque picker (clears saved mosque)
                 showMosquePicker()
                 return true
             }
-            // Short press = normal back behavior
+            // Short press BACK on display = go back to selector
+            val currentUrl = webView.url ?: ""
+            if (currentUrl.contains("mosque=")) {
+                showMosquePicker()
+                return true
+            }
+            // On selector screen, normal back behavior
             if (webView.canGoBack()) {
                 webView.goBack()
                 return true
