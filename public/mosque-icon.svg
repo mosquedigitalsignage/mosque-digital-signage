@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="#1e293b">
+  <!-- Base platform -->
+  <rect x="96" y="400" width="320" height="32" rx="4"/>
+  <!-- Main building -->
+  <rect x="128" y="280" width="256" height="120" rx="4"/>
+  <!-- Dome -->
+  <path d="M160 280 Q256 120 352 280 Z"/>
+  <!-- Crescent on dome -->
+  <circle cx="256" cy="175" r="22" fill="#3b82f6"/>
+  <circle cx="264" cy="170" r="18" fill="#ffffff"/>
+  <!-- Left minaret -->
+  <rect x="104" y="200" width="28" height="200" rx="4"/>
+  <rect x="100" y="192" width="36" height="16" rx="8"/>
+  <rect x="108" y="180" width="20" height="16" rx="10"/>
+  <!-- Right minaret -->
+  <rect x="380" y="200" width="28" height="200" rx="4"/>
+  <rect x="376" y="192" width="36" height="16" rx="8"/>
+  <rect x="384" y="180" width="20" height="16" rx="10"/>
+  <!-- Door -->
+  <path d="M236 400 L236 340 Q256 310 276 340 L276 400 Z" fill="#3b82f6"/>
+  <!-- Windows -->
+  <circle cx="192" cy="340" r="14" fill="#3b82f6" opacity="0.8"/>
+  <circle cx="320" cy="340" r="14" fill="#3b82f6" opacity="0.8"/>
+</svg>

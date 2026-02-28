@@ -48,6 +48,17 @@ body {
   text-align: center;
 }
 
+.admin-logo {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+}
+
+.admin-logo.form-logo {
+  display: block;
+  margin: 0 auto 16px;
+}
+
 #sign-in-screen h1 {
   font-size: 2rem;
   font-weight: 800;
