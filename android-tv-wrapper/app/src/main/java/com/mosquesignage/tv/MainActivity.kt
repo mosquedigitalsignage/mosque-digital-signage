@@ -170,7 +170,7 @@ class MainActivity : AppCompatActivity() {
             allowContentAccess = true
             loadWithOverviewMode = true
             useWideViewPort = true
-            mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
             cacheMode = WebSettings.LOAD_DEFAULT
             userAgentString = "Mosque-Digital-Signage-TV/1.0"
         }

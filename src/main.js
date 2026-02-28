@@ -50,6 +50,12 @@ async function initApp() {
     return;
   }
 
+  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!UUID_REGEX.test(mosqueId)) {
+    showErrorScreen('Invalid mosque ID. Please check the URL.');
+    return;
+  }
+
   try {
     mosqueConfig = await fetchMosqueConfig(mosqueId);
   } catch (err) {
@@ -117,9 +123,6 @@ async function initAllModules() {
   scheduleReload();
 }
 
-// === SUPER USER ===
-const SUPER_USER_EMAIL = 'mosquedigitalsignage@gmail.com';
-
 // === MOSQUE SELECTOR SCREEN ===
 async function showMosqueSelector() {
   const layout = document.querySelector('.main-layout');
@@ -173,7 +176,7 @@ async function showPostLoginSelector(user, adminRecord) {
   const layout = document.querySelector('.main-layout');
   if (!layout) return;
 
-  const isSuperUser = user.email === SUPER_USER_EMAIL;
+  const isSuperUser = adminRecord?.role === 'platform_admin';
 
   // Fetch names for user's mosques
   let userMosques = [];
