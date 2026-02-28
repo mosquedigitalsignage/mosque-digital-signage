@@ -4,6 +4,7 @@ import {
   initFirebase,
   getAuth,
   signInWithGoogle,
+  checkRedirectResult,
   signOut as firebaseSignOut,
   onAuthStateChanged,
   fetchAdminRecord,
@@ -37,6 +38,9 @@ let mosqueId = null;
 // === INIT ===
 function init() {
   initFirebase();
+
+  // Process redirect sign-in result (Android WebView — no popup support)
+  checkRedirectResult().catch(err => console.error('Redirect result error:', err));
 
   // Sign-in button
   document.getElementById('google-sign-in-btn')?.addEventListener('click', async () => {

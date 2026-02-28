@@ -152,14 +152,32 @@ export function normalizeAdminRecord(record) {
   return record;
 }
 
+// Detect if running inside the Mosque Digital Signage Android app (WebView)
+const isInWebView = /Mosque-Digital-Signage/.test(navigator.userAgent);
+
 /**
- * Sign in with Google popup.
- * @returns {Promise<firebase.auth.UserCredential>}
+ * Sign in with Google. Uses redirect in the Android WebView (no popup support),
+ * popup elsewhere.
+ * @returns {Promise<firebase.auth.UserCredential|null>} null when redirect is initiated
  */
 export async function signInWithGoogle() {
   const auth = getAuth();
   const provider = new firebase.auth.GoogleAuthProvider();
+  if (isInWebView) {
+    await auth.signInWithRedirect(provider);
+    return null; // Page will reload after redirect completes
+  }
   return auth.signInWithPopup(provider);
+}
+
+/**
+ * Get the result of a redirect sign-in. Call on page load to handle
+ * returning users after signInWithRedirect.
+ * @returns {Promise<firebase.auth.UserCredential|null>}
+ */
+export async function checkRedirectResult() {
+  const auth = getAuth();
+  return auth.getRedirectResult();
 }
 
 /**

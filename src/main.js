@@ -10,7 +10,7 @@ import {
   getDriveImageUrl,
 } from './config.js';
 
-import { initFirebase, fetchMosqueConfig, signInWithGoogle, fetchAdminRecord, fetchAllMosques, addMosqueToAdmin, normalizeAdminRecord } from './firebase.js';
+import { initFirebase, fetchMosqueConfig, signInWithGoogle, checkRedirectResult, fetchAdminRecord, fetchAllMosques, addMosqueToAdmin, normalizeAdminRecord } from './firebase.js';
 
 import mosqueIconUrl from '/mosque-icon.svg?url';
 
@@ -46,6 +46,19 @@ async function initApp() {
   mosqueId = params.get('mosque');
 
   if (!mosqueId) {
+    // Handle returning from a redirect sign-in (Android WebView)
+    try {
+      const redirectResult = await checkRedirectResult();
+      if (redirectResult?.user) {
+        const user = redirectResult.user;
+        const adminRecord = normalizeAdminRecord(await fetchAdminRecord(user.uid));
+        showMosqueSelector();
+        showPostLoginSelector(user, adminRecord);
+        return;
+      }
+    } catch (err) {
+      console.error('Redirect sign-in check failed:', err);
+    }
     showMosqueSelector();
     return;
   }
@@ -157,6 +170,7 @@ async function handleAdminSignIn() {
 
   try {
     const result = await signInWithGoogle();
+    if (!result) return; // Redirect initiated — page will reload
     const user = result.user;
     if (status) status.textContent = 'Looking up your mosques...';
     const adminRecord = normalizeAdminRecord(await fetchAdminRecord(user.uid));
