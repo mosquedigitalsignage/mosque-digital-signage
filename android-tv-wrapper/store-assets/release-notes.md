@@ -1,5 +1,15 @@
 # Release Notes
 
+## v1.4.2 (2026.02.28)
+
+**What's New:**
+- Fixed Google sign-in on mobile/tablet: WebView now uses redirect flow instead of unsupported popup
+
+**Play Store "What's New" (paste into Play Console):**
+Fixed Google sign-in on phones and tablets.
+
+---
+
 ## v1.4.1 (2026.02.28)
 
 **What's New:**
