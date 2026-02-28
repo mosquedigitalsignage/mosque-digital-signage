@@ -1,5 +1,16 @@
 # Release Notes
 
+## v1.4.1 (2026.02.28)
+
+**What's New:**
+- Fixed Google sign-in (CSP policy now allows Firebase Auth domains)
+- Fixed Drive images failing to load (CSP now allows googleusercontent.com)
+
+**Play Store "What's New" (paste into Play Console):**
+Fixed Google sign-in and mosque display images not loading.
+
+---
+
 ## v1.4 (2026.02.28)
 
 **What's New:**
