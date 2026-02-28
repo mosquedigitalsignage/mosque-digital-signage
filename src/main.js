@@ -10,7 +10,7 @@ import {
   getDriveImageUrl,
 } from './config.js';
 
-import { initFirebase, fetchMosqueConfig, fetchAllMosques, signInWithGoogle, fetchAdminRecord } from './firebase.js';
+import { initFirebase, fetchMosqueConfig, signInWithGoogle, fetchAdminRecord } from './firebase.js';
 
 // === GLOBAL STATE ===
 let mosqueConfig = null;
@@ -94,70 +94,29 @@ async function initAllModules() {
   scheduleReload();
 }
 
-// === DEVICE DETECTION ===
-function isTVDevice() {
-  const ua = navigator.userAgent.toLowerCase();
-  return ua.includes('tv') || ua.includes('leanback') || ua.includes('mosque-digital-signage-tv')
-    || window.innerWidth >= 1920;
-}
-
 // === MOSQUE SELECTOR SCREEN ===
 async function showMosqueSelector() {
   const layout = document.querySelector('.main-layout');
   if (!layout) return;
 
-  const showSignIn = !isTVDevice();
-
   layout.innerHTML = `
     <div class="selector-screen">
       <h1>Mosque Digital Signage</h1>
-      <p>Select your mosque</p>
-      ${showSignIn ? `
-        <button class="admin-signin-btn" id="admin-signin-btn">Sign in as Admin</button>
-        <div class="signin-divider"><span>or browse all mosques</span></div>
-      ` : ''}
-      <div class="mosque-list" id="mosque-list">
-        <p class="loading-text">Loading mosques...</p>
-      </div>
+      <p>Sign in to load your mosque</p>
+      <button class="admin-signin-btn" id="admin-signin-btn">Sign in with Google</button>
+      <div id="signin-status"></div>
     </div>
   `;
 
-  // Set up admin sign-in button
-  if (showSignIn) {
-    const signinBtn = document.getElementById('admin-signin-btn');
-    signinBtn.addEventListener('click', handleAdminSignIn);
-  }
+  const signinBtn = document.getElementById('admin-signin-btn');
+  signinBtn.addEventListener('click', handleAdminSignIn);
 
-  const listEl = document.getElementById('mosque-list');
-
-  try {
-    const mosques = await fetchAllMosques();
-
-    if (mosques.length === 0) {
-      listEl.innerHTML = '<p>No mosques configured yet. Visit the <a href="admin.html">admin dashboard</a> to set one up.</p>';
-      return;
-    }
-
-    listEl.innerHTML = '';
-    mosques.forEach(m => {
-      const card = document.createElement('a');
-      card.className = 'mosque-card';
-      card.href = `?mosque=${m.id}`;
-      card.innerHTML = `
-        <div class="mosque-card-name">${m.name}</div>
-        ${m.shortName ? `<div class="mosque-card-short">${m.shortName}</div>` : ''}
-      `;
-      listEl.appendChild(card);
-    });
-  } catch (err) {
-    console.error('Failed to load mosques:', err);
-    listEl.innerHTML = '<p class="error-text">Failed to load mosques. Please check your connection and try again.</p>';
-  }
 }
 
-// === ADMIN SIGN-IN (mobile only) ===
+// === ADMIN SIGN-IN ===
 async function handleAdminSignIn() {
   const btn = document.getElementById('admin-signin-btn');
+  const status = document.getElementById('signin-status');
   if (btn) {
     btn.disabled = true;
     btn.textContent = 'Signing in...';
@@ -166,23 +125,25 @@ async function handleAdminSignIn() {
   try {
     const result = await signInWithGoogle();
     const uid = result.user.uid;
+    if (status) status.textContent = 'Looking up your mosque...';
     const adminRecord = await fetchAdminRecord(uid);
 
     if (adminRecord && adminRecord.mosqueId) {
+      if (status) status.textContent = 'Loading your mosque display...';
       window.location.href = `?mosque=${adminRecord.mosqueId}`;
     } else {
+      if (status) status.textContent = 'No mosque found for this account. Set one up in the admin dashboard first.';
       if (btn) {
-        btn.textContent = 'No mosque found for this account';
+        btn.textContent = 'Sign in with Google';
         btn.disabled = false;
-        setTimeout(() => { btn.textContent = 'Sign in as Admin'; }, 3000);
       }
     }
   } catch (err) {
     console.error('Admin sign-in failed:', err);
+    if (status) status.textContent = 'Sign-in failed. Please try again.';
     if (btn) {
-      btn.textContent = 'Sign-in failed. Try again.';
+      btn.textContent = 'Sign in with Google';
       btn.disabled = false;
-      setTimeout(() => { btn.textContent = 'Sign in as Admin'; }, 3000);
     }
   }
 }

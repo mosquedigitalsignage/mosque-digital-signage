@@ -339,10 +339,11 @@ html, body {
 .admin-signin-btn:hover { opacity: 0.85; }
 .admin-signin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.signin-divider {
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 0.85rem;
-  margin-bottom: 24px;
+#signin-status {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  margin-top: 16px;
+  min-height: 1.2em;
 }
 
 /* === ERROR SCREEN === */
